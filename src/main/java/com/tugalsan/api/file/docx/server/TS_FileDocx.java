@@ -225,7 +225,7 @@ public class TS_FileDocx implements AutoCloseable {
     }
 
     private String mergeCell_byIndex(XWPFTable table, int rowIdxFrom, int rowIdxTo, int colIdxFrom, int colIdxTo, int[] widthsPercent) {
-        try {
+        return TGS_UnSafe.compile(() -> {
             d.ci("mergeCell_byIndex -> RF:" + rowIdxFrom + ", RT:" + rowIdxTo + ", CF:" + colIdxFrom + ", CT:" + colIdxTo);
             if (rowIdxTo < rowIdxFrom) {
                 return "ERROR: mergeCell_byIndex.rowIdxTo:" + rowIdxTo + " < rowIdxFrom:" + rowIdxFrom;
@@ -247,16 +247,16 @@ public class TS_FileDocx implements AutoCloseable {
                     setTableColWidth(table, ri, colIdxFrom, newColumnWidth);
                 });
             }
-        } catch (Exception e) {
+            return null;
+        }, e -> {
             d.ce("mergeCell_byIndex.ERROR.e:" + e.getMessage());
             e.printStackTrace();
-            //DO NOTHING
-        }
-        return null;
+            return null;
+        });
     }
 
     private boolean mergeTableCells_Rows(XWPFTable table, int rowIdxFrom, int rowIdxTo, int colIdx) {
-        try {
+        return TGS_UnSafe.compile(() -> {
             d.ci("mergeTableCells_Rows -> RF:" + rowIdxFrom + ", RT:" + rowIdxTo + ", CI:" + colIdx);
             for (var rowIndex = rowIdxFrom; rowIndex <= rowIdxTo; rowIndex++) {
                 var cell = table.getRow(rowIndex).getCell(colIdx);
@@ -281,17 +281,16 @@ public class TS_FileDocx implements AutoCloseable {
                 tcPr.setVMerge(vmerge);
             }
             return true;
-        } catch (Exception e) {
+        }, e -> {
             d.ce("mergeTableCells_Rows.ERROR.e:" + e.getMessage());
             e.printStackTrace();
-            //DO NOTHING
             return false;
-        }
+        });
     }
 
     //merging horizontally by setting grid span instead of using CTHMerge
     private boolean mergeTableCells_Cols(XWPFTable table, int rowIdx, int colIdxFrom, int colIdxTo) {
-        try {
+        return TGS_UnSafe.compile(() -> {
             d.ci("mergeTableCells_Cols -> RI:" + rowIdx + ", CF:" + colIdxFrom + ", CT:" + colIdxTo);
             var cell = table.getRow(rowIdx).getCell(colIdxFrom);
             // Try getting the TcPr. Not simply setting an new one every time.
@@ -311,12 +310,11 @@ public class TS_FileDocx implements AutoCloseable {
                 table.getRow(rowIdx).removeCell(colIndex);
             }
             return true;
-        } catch (Exception e) {
+        }, e -> {
             d.ce("mergeTableCells_Cols.ERROR.e:" + e.getMessage());
             e.printStackTrace();
-            //DO NOTHING
             return false;
-        }
+        });
     }
 
     public static double TABLE_WITH_FACTOR_A3_PORT() {
