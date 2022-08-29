@@ -32,7 +32,7 @@ import com.tugalsan.api.unsafe.client.*;
 
 public class TS_FileDocx implements AutoCloseable {
 
-    final private static TS_Log d = TS_Log.of(TS_FileDocx.class.getSimpleName());
+    final private static TS_Log d = TS_Log.of(TS_FileDocx.class);
 
     public static Dimension getPageDimension(XWPFDocument doc) {
         var dim = new Dimension();
