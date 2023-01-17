@@ -540,5 +540,4 @@ public class TS_FileDocx implements AutoCloseable {
     public String COLOR_GRAYLIGHT = "222222";
     public String COLOR_GRAY = "777777";
     public String COLOR_GRAYDARK = "AAAAAA";
-
 }
