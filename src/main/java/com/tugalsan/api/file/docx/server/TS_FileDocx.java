@@ -1,5 +1,6 @@
 package com.tugalsan.api.file.docx.server;
 
+import com.tugalsan.api.charset.client.TGS_CharSetCast;
 import java.io.*;
 import java.math.*;
 import java.nio.file.*;
@@ -159,41 +160,42 @@ public class TS_FileDocx implements AutoCloseable {
             }
 
             Integer format = null;
+            var imgFileStrLC = TGS_CharSetCast.toLocaleLowerCase(imgFileStr);
             if (imgFileStr.endsWith(".emf")) {
                 format = XWPFDocument.PICTURE_TYPE_EMF;
-            } else if (imgFileStr.toLowerCase(Locale.ROOT).endsWith(".wmf") || imgFileStr.toLowerCase(Locale.ROOT).endsWith(".wmf")) {
+            } else if (imgFileStrLC.endsWith(".wmf") || imgFileStrLC.endsWith(".wmf")) {
                 format = XWPFDocument.PICTURE_TYPE_WMF;
-            } else if (imgFileStr.toLowerCase(Locale.ROOT).endsWith(".pict") || imgFileStr.toLowerCase(Locale.ROOT).endsWith(".pict")) {
+            } else if (imgFileStrLC.endsWith(".pict") || imgFileStrLC.endsWith(".pict")) {
                 format = XWPFDocument.PICTURE_TYPE_PICT;
-            } else if (imgFileStr.toLowerCase(Locale.ROOT).endsWith(".pıct") || imgFileStr.toLowerCase(Locale.ROOT).endsWith(".pıct")) {
+            } else if (imgFileStrLC.endsWith(".pıct") || imgFileStrLC.endsWith(".pıct")) {
                 format = XWPFDocument.PICTURE_TYPE_PICT;
-            } else if (imgFileStr.toLowerCase(Locale.ROOT).endsWith(".jpeg") || imgFileStr.toLowerCase(Locale.ROOT).endsWith(".jpeg")) {
+            } else if (imgFileStrLC.endsWith(".jpeg") || imgFileStrLC.endsWith(".jpeg")) {
                 format = XWPFDocument.PICTURE_TYPE_JPEG;
-            } else if (imgFileStr.toLowerCase(Locale.ROOT).endsWith(".jpg") || imgFileStr.toLowerCase(Locale.ROOT).endsWith(".jpg")) {
+            } else if (imgFileStrLC.endsWith(".jpg") || imgFileStrLC.endsWith(".jpg")) {
                 format = XWPFDocument.PICTURE_TYPE_JPEG;
-            } else if (imgFileStr.toLowerCase(Locale.ROOT).endsWith(".png") || imgFileStr.toLowerCase(Locale.ROOT).endsWith(".png")) {
+            } else if (imgFileStrLC.endsWith(".png") || imgFileStrLC.endsWith(".png")) {
                 format = XWPFDocument.PICTURE_TYPE_PNG;
-            } else if (imgFileStr.toLowerCase(Locale.ROOT).endsWith(".dib") || imgFileStr.toLowerCase(Locale.ROOT).endsWith(".dib")) {
+            } else if (imgFileStrLC.endsWith(".dib") || imgFileStrLC.endsWith(".dib")) {
                 format = XWPFDocument.PICTURE_TYPE_DIB;
-            } else if (imgFileStr.toLowerCase(Locale.ROOT).endsWith(".dıb") || imgFileStr.toLowerCase(Locale.ROOT).endsWith(".dıb")) {
+            } else if (imgFileStrLC.endsWith(".dıb") || imgFileStrLC.endsWith(".dıb")) {
                 format = XWPFDocument.PICTURE_TYPE_DIB;
-            } else if (imgFileStr.toLowerCase(Locale.ROOT).endsWith(".gif") || imgFileStr.toLowerCase(Locale.ROOT).endsWith(".gif")) {
+            } else if (imgFileStrLC.endsWith(".gif") || imgFileStrLC.endsWith(".gif")) {
                 format = XWPFDocument.PICTURE_TYPE_GIF;
-            } else if (imgFileStr.toLowerCase(Locale.ROOT).endsWith(".gıf") || imgFileStr.toLowerCase(Locale.ROOT).endsWith(".gıf")) {
+            } else if (imgFileStrLC.endsWith(".gıf") || imgFileStrLC.endsWith(".gıf")) {
                 format = XWPFDocument.PICTURE_TYPE_GIF;
-            } else if (imgFileStr.toLowerCase(Locale.ROOT).endsWith(".tiff") || imgFileStr.toLowerCase(Locale.ROOT).endsWith(".tiff")) {
+            } else if (imgFileStrLC.endsWith(".tiff") || imgFileStrLC.endsWith(".tiff")) {
                 format = XWPFDocument.PICTURE_TYPE_TIFF;
-            } else if (imgFileStr.toLowerCase(Locale.ROOT).endsWith(".tıff") || imgFileStr.toLowerCase(Locale.ROOT).endsWith(".tıff")) {
+            } else if (imgFileStrLC.endsWith(".tıff") || imgFileStrLC.endsWith(".tıff")) {
                 format = XWPFDocument.PICTURE_TYPE_TIFF;
-            } else if (imgFileStr.toLowerCase(Locale.ROOT).endsWith(".tif") || imgFileStr.toLowerCase(Locale.ROOT).endsWith(".tif")) {
+            } else if (imgFileStrLC.endsWith(".tif") || imgFileStrLC.endsWith(".tif")) {
                 format = XWPFDocument.PICTURE_TYPE_TIFF;
-            } else if (imgFileStr.toLowerCase(Locale.ROOT).endsWith(".tıf") || imgFileStr.toLowerCase(Locale.ROOT).endsWith(".tıf")) {
+            } else if (imgFileStrLC.endsWith(".tıf") || imgFileStrLC.endsWith(".tıf")) {
                 format = XWPFDocument.PICTURE_TYPE_TIFF;
-            } else if (imgFileStr.toLowerCase(Locale.ROOT).endsWith(".eps") || imgFileStr.toLowerCase(Locale.ROOT).endsWith(".eps")) {
+            } else if (imgFileStrLC.endsWith(".eps") || imgFileStrLC.endsWith(".eps")) {
                 format = XWPFDocument.PICTURE_TYPE_EPS;
-            } else if (imgFileStr.toLowerCase(Locale.ROOT).endsWith(".bmp") || imgFileStr.toLowerCase(Locale.ROOT).endsWith(".bmp")) {
+            } else if (imgFileStrLC.endsWith(".bmp") || imgFileStrLC.endsWith(".bmp")) {
                 format = XWPFDocument.PICTURE_TYPE_BMP;
-            } else if (imgFileStr.toLowerCase(Locale.ROOT).endsWith(".wpg") || imgFileStr.toLowerCase(Locale.ROOT).endsWith(".wpg")) {
+            } else if (imgFileStrLC.endsWith(".wpg") || imgFileStrLC.endsWith(".wpg")) {
                 format = XWPFDocument.PICTURE_TYPE_WPG;
             }
             if (format == null) {
