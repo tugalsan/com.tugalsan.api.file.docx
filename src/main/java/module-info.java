@@ -4,7 +4,7 @@ module com.tugalsan.api.file.docx {
     requires poi.ooxml;
     requires ooxml.schemas;
     requires com.tugalsan.api.log;
-    requires com.tugalsan.api.compiler;
+    requires com.tugalsan.api.callable;
     requires com.tugalsan.api.unsafe;
     requires com.tugalsan.api.charset;
     requires com.tugalsan.api.stream;
