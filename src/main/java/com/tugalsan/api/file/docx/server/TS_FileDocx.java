@@ -4,7 +4,6 @@ import com.tugalsan.api.charset.client.TGS_CharSetCast;
 import java.io.*;
 import java.math.*;
 import java.nio.file.*;
-import java.util.*;
 import java.util.stream.*;
 import java.awt.*;
 import org.apache.poi.util.Units;
@@ -432,7 +431,7 @@ public class TS_FileDocx implements AutoCloseable {
         IntStream.range(0, rowSize).parallel().forEach(ri -> IntStream.range(0, colSize).parallel().forEach(ci -> table.getRow(ri).getCell(ci).setText("")));
         return table;
     }
-    private boolean tablefix = false;
+    private final boolean tablefix = false;
 
     public static XWPFTableRow addTableRow(XWPFTable table, int colSize) {
         var newRow = table.createRow();
@@ -490,7 +489,7 @@ public class TS_FileDocx implements AutoCloseable {
         d.ci("addText", "p", p, "text", text);
         var tokens = TS_StringUtils.toList(text, "\n");
         var tokenCount = 0;
-        for (String t : tokens) {
+        for (var t : tokens) {
             tokenCount++;
             if (t.isEmpty() || tokenCount > 1) {
                 addNewLine(p);
