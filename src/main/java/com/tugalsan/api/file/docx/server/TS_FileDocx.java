@@ -16,7 +16,7 @@ import com.tugalsan.api.stream.client.*;
 import com.tugalsan.api.string.client.*;
 import com.tugalsan.api.url.client.*;
 import com.tugalsan.api.file.common.server.TS_FileCommonBall;
-import com.tugalsan.api.file.common.server.TS_FileTmcrCodeFontTags;
+import com.tugalsan.api.file.common.server.TS_FileCommonFontTags;
 
 public class TS_FileDocx extends TS_FileCommonInterface {
 
@@ -456,27 +456,27 @@ public class TS_FileDocx extends TS_FileCommonInterface {
         if (fontColor == null) {
             return "000000";
         }
-        if (Objects.equals(fontColor, TS_FileTmcrCodeFontTags.CODE_TOKEN_FONT_COLOR_RED())) {
+        if (Objects.equals(fontColor, TS_FileCommonFontTags.CODE_TOKEN_FONT_COLOR_RED())) {
             return "FF0000";
-        } else if (Objects.equals(fontColor, TS_FileTmcrCodeFontTags.CODE_TOKEN_FONT_COLOR_YELLOW())) {
+        } else if (Objects.equals(fontColor, TS_FileCommonFontTags.CODE_TOKEN_FONT_COLOR_YELLOW())) {
             return "FFFF00";
-        } else if (Objects.equals(fontColor, TS_FileTmcrCodeFontTags.CODE_TOKEN_FONT_COLOR_BLUE())) {
+        } else if (Objects.equals(fontColor, TS_FileCommonFontTags.CODE_TOKEN_FONT_COLOR_BLUE())) {
             return "0000FF";
-        } else if (Objects.equals(fontColor, TS_FileTmcrCodeFontTags.CODE_TOKEN_FONT_COLOR_GREEN())) {
+        } else if (Objects.equals(fontColor, TS_FileCommonFontTags.CODE_TOKEN_FONT_COLOR_GREEN())) {
             return "00FF00";
-        } else if (Objects.equals(fontColor, TS_FileTmcrCodeFontTags.CODE_TOKEN_FONT_COLOR_PINK())) {
+        } else if (Objects.equals(fontColor, TS_FileCommonFontTags.CODE_TOKEN_FONT_COLOR_PINK())) {
             return "FFC0CB";
-        } else if (Objects.equals(fontColor, TS_FileTmcrCodeFontTags.CODE_TOKEN_FONT_COLOR_ORANGE())) {
+        } else if (Objects.equals(fontColor, TS_FileCommonFontTags.CODE_TOKEN_FONT_COLOR_ORANGE())) {
             return "FFA500";
-        } else if (Objects.equals(fontColor, TS_FileTmcrCodeFontTags.CODE_TOKEN_FONT_COLOR_CYAN())) {
+        } else if (Objects.equals(fontColor, TS_FileCommonFontTags.CODE_TOKEN_FONT_COLOR_CYAN())) {
             return "00FFFF";
-        } else if (Objects.equals(fontColor, TS_FileTmcrCodeFontTags.CODE_TOKEN_FONT_COLOR_DARK_GRAY())) {
+        } else if (Objects.equals(fontColor, TS_FileCommonFontTags.CODE_TOKEN_FONT_COLOR_DARK_GRAY())) {
             return "585858";
-        } else if (Objects.equals(fontColor, TS_FileTmcrCodeFontTags.CODE_TOKEN_FONT_COLOR_GRAY())) {
+        } else if (Objects.equals(fontColor, TS_FileCommonFontTags.CODE_TOKEN_FONT_COLOR_GRAY())) {
             return "808080";
-        } else if (Objects.equals(fontColor, TS_FileTmcrCodeFontTags.CODE_TOKEN_FONT_COLOR_LIGHT_GRAY())) {
+        } else if (Objects.equals(fontColor, TS_FileCommonFontTags.CODE_TOKEN_FONT_COLOR_LIGHT_GRAY())) {
             return "D3D3D3";
-        } else if (Objects.equals(fontColor, TS_FileTmcrCodeFontTags.CODE_TOKEN_FONT_COLOR_MAGENTA())) {
+        } else if (Objects.equals(fontColor, TS_FileCommonFontTags.CODE_TOKEN_FONT_COLOR_MAGENTA())) {
             return "6D1717";
         } else/* if (Objects.equals(fontColor, CODE_TOKEN_FONT_COLOR_BLACK()))*/ {
             return "000000";
