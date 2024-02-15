@@ -39,16 +39,16 @@ public class TS_FileDocx extends TS_FileCommonInterface {
     final private String CELL_EMPTY = "CELL_EMPTY";
     final private String CELL_INIT = "";
 
-    private TS_FileCommonBall macroGlobals;
+    private TS_FileCommonBall fileCommonBall;
 
     private TS_FileDocx(boolean enabled, Path localFile, TGS_Url remoteFile) {
         super(enabled, localFile, remoteFile);
     }
 
-    public static void use(boolean enabled, TS_FileCommonBall macroGlobals, Path localFile, TGS_Url remoteFile, TGS_RunnableType1<TS_FileDocx> docx) {
+    public static void use(boolean enabled, TS_FileCommonBall fileCommonBall, Path localFile, TGS_Url remoteFile, TGS_RunnableType1<TS_FileDocx> docx) {
         var instance = new TS_FileDocx(enabled, localFile, remoteFile);
         try {
-            instance.use_init(macroGlobals);
+            instance.use_init(fileCommonBall);
             docx.run(instance);
         } catch (Exception e) {
             instance.saveFile(e.getMessage());
@@ -58,8 +58,8 @@ public class TS_FileDocx extends TS_FileCommonInterface {
         }
     }
 
-    private void use_init(TS_FileCommonBall macroGlobals) {
-        this.macroGlobals = macroGlobals;
+    private void use_init(TS_FileCommonBall fileCommonBall) {
+        this.fileCommonBall = fileCommonBall;
         if (isClosed()) {
             return;
         }
@@ -114,13 +114,13 @@ public class TS_FileDocx extends TS_FileCommonInterface {
         }
         d.ci("addText");
         var lines = TS_StringUtils.toList(text, "\n");
-        var fh = macroGlobals.fontHeight + FONT_HEIGHT_OFFSET() < 1 ? 1 : macroGlobals.fontHeight + FONT_HEIGHT_OFFSET();
+        var fh = fileCommonBall.fontHeight + FONT_HEIGHT_OFFSET() < 1 ? 1 : fileCommonBall.fontHeight + FONT_HEIGHT_OFFSET();
         for (var i = 0; i < lines.size(); i++) {
             var line = lines.get(i);
             if (!line.isEmpty()) {
                 if (!TGS_StringDouble.may(text)) {
-                    docx.addText(docxParag, line, macroGlobals.fontBold, macroGlobals.fontItalic,
-                            macroGlobals.fontUnderlined, fh, getHexColor(macroGlobals.fontColor));
+                    docx.addText(docxParag, line, fileCommonBall.fontBold, fileCommonBall.fontItalic,
+                            fileCommonBall.fontUnderlined, fh, getHexColor(fileCommonBall.fontColor));
                 } else {
                     var k = 0.8f;
                     var fh_half = (int) (fh * k) < 1 ? 1 : (int) (fh * k);
@@ -129,17 +129,17 @@ public class TS_FileDocx extends TS_FileCommonInterface {
                         var tag = tags.get(j);
                         var dbl = TGS_StringDouble.of(text);
                         if (dbl.isEmpty()) {
-                            docx.addText(docxParag, tag, macroGlobals.fontBold, macroGlobals.fontItalic,
-                                    macroGlobals.fontUnderlined, fh, getHexColor(macroGlobals.fontColor));
+                            docx.addText(docxParag, tag, fileCommonBall.fontBold, fileCommonBall.fontItalic,
+                                    fileCommonBall.fontUnderlined, fh, getHexColor(fileCommonBall.fontColor));
                         } else {
-                            docx.addText(docxParag, String.valueOf(dbl.get().left), macroGlobals.fontBold, macroGlobals.fontItalic,
-                                    macroGlobals.fontUnderlined, fh, getHexColor(macroGlobals.fontColor));
-                            docx.addText(docxParag, String.valueOf(dbl.get().dim()) + String.valueOf(dbl.get().right), macroGlobals.fontBold, macroGlobals.fontItalic,
-                                    macroGlobals.fontUnderlined, fh_half, getHexColor(macroGlobals.fontColor));
+                            docx.addText(docxParag, String.valueOf(dbl.get().left), fileCommonBall.fontBold, fileCommonBall.fontItalic,
+                                    fileCommonBall.fontUnderlined, fh, getHexColor(fileCommonBall.fontColor));
+                            docx.addText(docxParag, String.valueOf(dbl.get().dim()) + String.valueOf(dbl.get().right), fileCommonBall.fontBold, fileCommonBall.fontItalic,
+                                    fileCommonBall.fontUnderlined, fh_half, getHexColor(fileCommonBall.fontColor));
                         }
                         if (tags.size() - 1 != j) {
-                            docx.addText(docxParag, " ", macroGlobals.fontBold, macroGlobals.fontItalic,
-                                    macroGlobals.fontUnderlined, fh, getHexColor(macroGlobals.fontColor));
+                            docx.addText(docxParag, " ", fileCommonBall.fontBold, fileCommonBall.fontItalic,
+                                    fileCommonBall.fontUnderlined, fh, getHexColor(fileCommonBall.fontColor));
                         }
                     });
                 }
