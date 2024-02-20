@@ -1,6 +1,6 @@
 package com.tugalsan.api.file.docx.server;
 
-import com.tugalsan.api.file.common.server.TS_FileCommonInterface;
+import com.tugalsan.api.file.common.server.TS_FileCommonAbstract;
 import com.tugalsan.api.string.server.*;
 import com.tugalsan.api.cast.client.*;
 import java.awt.image.*;
@@ -15,10 +15,10 @@ import com.tugalsan.api.runnable.client.TGS_RunnableType1;
 import com.tugalsan.api.stream.client.*;
 import com.tugalsan.api.string.client.*;
 import com.tugalsan.api.url.client.*;
-import com.tugalsan.api.file.common.server.TS_FileCommonBall;
+import com.tugalsan.api.file.common.server.TS_FileCommonConfig;
 import com.tugalsan.api.file.common.server.TS_FileCommonFontTags;
 
-public class TS_FileDocx extends TS_FileCommonInterface {
+public class TS_FileDocx extends TS_FileCommonAbstract {
 
     final private static TS_Log d = TS_Log.of(TS_FileDocx.class);
 
@@ -39,16 +39,16 @@ public class TS_FileDocx extends TS_FileCommonInterface {
     final private String CELL_EMPTY = "CELL_EMPTY";
     final private String CELL_INIT = "";
 
-    private TS_FileCommonBall fileCommonBall;
+    private TS_FileCommonConfig fileCommonConfig;
 
     private TS_FileDocx(boolean enabled, Path localFile, TGS_Url remoteFile) {
         super(enabled, localFile, remoteFile);
     }
 
-    public static void use(boolean enabled, TS_FileCommonBall fileCommonBall, Path localFile, TGS_Url remoteFile, TGS_RunnableType1<TS_FileDocx> docx) {
+    public static void use(boolean enabled, TS_FileCommonConfig fileCommonConfig, Path localFile, TGS_Url remoteFile, TGS_RunnableType1<TS_FileDocx> docx) {
         var instance = new TS_FileDocx(enabled, localFile, remoteFile);
         try {
-            instance.use_init(fileCommonBall);
+            instance.use_init(fileCommonConfig);
             docx.run(instance);
         } catch (Exception e) {
             instance.saveFile(e.getMessage());
@@ -58,8 +58,8 @@ public class TS_FileDocx extends TS_FileCommonInterface {
         }
     }
 
-    private void use_init(TS_FileCommonBall fileCommonBall) {
-        this.fileCommonBall = fileCommonBall;
+    private void use_init(TS_FileCommonConfig fileCommonConfig) {
+        this.fileCommonConfig = fileCommonConfig;
         if (isClosed()) {
             return;
         }
@@ -114,13 +114,13 @@ public class TS_FileDocx extends TS_FileCommonInterface {
         }
         d.ci("addText");
         var lines = TS_StringUtils.toList(text, "\n");
-        var fh = fileCommonBall.fontHeight + FONT_HEIGHT_OFFSET() < 1 ? 1 : fileCommonBall.fontHeight + FONT_HEIGHT_OFFSET();
+        var fh = fileCommonConfig.fontHeight + FONT_HEIGHT_OFFSET() < 1 ? 1 : fileCommonConfig.fontHeight + FONT_HEIGHT_OFFSET();
         for (var i = 0; i < lines.size(); i++) {
             var line = lines.get(i);
             if (!line.isEmpty()) {
                 if (!TGS_StringDouble.may(text)) {
-                    docx.addText(docxParag, line, fileCommonBall.fontBold, fileCommonBall.fontItalic,
-                            fileCommonBall.fontUnderlined, fh, getHexColor(fileCommonBall.fontColor));
+                    docx.addText(docxParag, line, fileCommonConfig.fontBold, fileCommonConfig.fontItalic,
+                            fileCommonConfig.fontUnderlined, fh, getHexColor(fileCommonConfig.fontColor));
                 } else {
                     var k = 0.8f;
                     var fh_half = (int) (fh * k) < 1 ? 1 : (int) (fh * k);
@@ -129,17 +129,17 @@ public class TS_FileDocx extends TS_FileCommonInterface {
                         var tag = tags.get(j);
                         var dbl = TGS_StringDouble.of(text);
                         if (dbl.isEmpty()) {
-                            docx.addText(docxParag, tag, fileCommonBall.fontBold, fileCommonBall.fontItalic,
-                                    fileCommonBall.fontUnderlined, fh, getHexColor(fileCommonBall.fontColor));
+                            docx.addText(docxParag, tag, fileCommonConfig.fontBold, fileCommonConfig.fontItalic,
+                                    fileCommonConfig.fontUnderlined, fh, getHexColor(fileCommonConfig.fontColor));
                         } else {
-                            docx.addText(docxParag, String.valueOf(dbl.get().left), fileCommonBall.fontBold, fileCommonBall.fontItalic,
-                                    fileCommonBall.fontUnderlined, fh, getHexColor(fileCommonBall.fontColor));
-                            docx.addText(docxParag, String.valueOf(dbl.get().dim()) + String.valueOf(dbl.get().right), fileCommonBall.fontBold, fileCommonBall.fontItalic,
-                                    fileCommonBall.fontUnderlined, fh_half, getHexColor(fileCommonBall.fontColor));
+                            docx.addText(docxParag, String.valueOf(dbl.get().left), fileCommonConfig.fontBold, fileCommonConfig.fontItalic,
+                                    fileCommonConfig.fontUnderlined, fh, getHexColor(fileCommonConfig.fontColor));
+                            docx.addText(docxParag, String.valueOf(dbl.get().dim()) + String.valueOf(dbl.get().right), fileCommonConfig.fontBold, fileCommonConfig.fontItalic,
+                                    fileCommonConfig.fontUnderlined, fh_half, getHexColor(fileCommonConfig.fontColor));
                         }
                         if (tags.size() - 1 != j) {
-                            docx.addText(docxParag, " ", fileCommonBall.fontBold, fileCommonBall.fontItalic,
-                                    fileCommonBall.fontUnderlined, fh, getHexColor(fileCommonBall.fontColor));
+                            docx.addText(docxParag, " ", fileCommonConfig.fontBold, fileCommonConfig.fontItalic,
+                                    fileCommonConfig.fontUnderlined, fh, getHexColor(fileCommonConfig.fontColor));
                         }
                     });
                 }
