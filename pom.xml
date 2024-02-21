@@ -22,7 +22,7 @@
             </exclusions>
             <version>4.1.2</version><!--4.1.2 not 5!-->
         </dependency>
-        <dependency>
+        <dependency><!-- FIX FOR: org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation.LANDSCAPE/PORTRAIT -->
             <groupId>org.apache.poi</groupId>
             <artifactId>ooxml-schemas</artifactId>
             <version>1.4</version>
