@@ -50,9 +50,6 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
         try {
             instance.use_init(fileCommonConfig);
             docx.run(instance);
-        } catch (Exception e) {
-            instance.saveFile(e.getMessage());
-            throw e;
         } finally {
             instance.saveFile(null);
         }
@@ -132,9 +129,9 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
                             docx.addText(docxParag, tag, fileCommonConfig.fontBold, fileCommonConfig.fontItalic,
                                     fileCommonConfig.fontUnderlined, fh, getHexColor(fileCommonConfig.fontColor));
                         } else {
-                            docx.addText(docxParag, String.valueOf(dbl.get().left), fileCommonConfig.fontBold, fileCommonConfig.fontItalic,
+                            docx.addText(docxParag, String.valueOf(dbl.value().left), fileCommonConfig.fontBold, fileCommonConfig.fontItalic,
                                     fileCommonConfig.fontUnderlined, fh, getHexColor(fileCommonConfig.fontColor));
-                            docx.addText(docxParag, String.valueOf(dbl.get().dim()) + String.valueOf(dbl.get().right), fileCommonConfig.fontBold, fileCommonConfig.fontItalic,
+                            docx.addText(docxParag, String.valueOf(dbl.value().dim()) + String.valueOf(dbl.value().right), fileCommonConfig.fontBold, fileCommonConfig.fontItalic,
                                     fileCommonConfig.fontUnderlined, fh_half, getHexColor(fileCommonConfig.fontColor));
                         }
                         if (tags.size() - 1 != j) {
