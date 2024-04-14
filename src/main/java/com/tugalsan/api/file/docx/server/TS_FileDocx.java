@@ -125,7 +125,7 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
                     IntStream.range(0, tags.size()).forEachOrdered(j -> {
                         var tag = tags.get(j);
                         var dbl = TGS_StringDouble.of(text);
-                        if (dbl.isEmpty()) {
+                        if (dbl.isExcuse()) {
                             docx.addText(docxParag, tag, fileCommonConfig.fontBold, fileCommonConfig.fontItalic,
                                     fileCommonConfig.fontUnderlined, fh, getHexColor(fileCommonConfig.fontColor));
                         } else {
@@ -192,16 +192,13 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
         }
         d.ci("addImage", "init", pstImageLoc);
         beginText(0);
-        boolean result;
-        if (docx.addImage(docxParag, pstImageLoc.toAbsolutePath().toString(), pstImage.getWidth(), pstImage.getHeight())) {
-            result = true;
-        } else {
-            d.ce("addImage", "ERROR: TS_MIFDOCX.addImage_returns false");
-            result = false;
-        }
+        var u_addImage = docx.addImage(docxParag, pstImageLoc.toAbsolutePath().toString(), pstImage.getWidth(), pstImage.getHeight());
         endText();
+        if (u_addImage.isExcuse()) {
+            d.ct("addImage", u_addImage.excuse());
+        }
         d.ci("addImage", "fin");
-        return result;
+        return u_addImage.isVoid();
     }
 
     @Override
@@ -301,12 +298,13 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
             return rowCellColSpanOffset;
         }
         OUTER:
-        for (int ci = 0; ci < table_relColSizes.length; ci++) {
-            var eRowCellText = tableAbstract.getValueAsString(currentRowIndex, ci);
-            if (null == eRowCellText) {
-                d.ci("calcultaeRowCellColSpanOffset.O(", currentRowIndex + "," + ci + ")[", eRowCellText, "]");
+        for (var ci = 0; ci < table_relColSizes.length; ci++) {
+            var u_eRowCellText = tableAbstract.getValueAsString(currentRowIndex, ci);
+            if (u_eRowCellText.isExcuse()) {
+                d.ci("calcultaeRowCellColSpanOffset.O(", currentRowIndex + "," + ci + ")[", u_eRowCellText.excuse().getMessage(), "]");
                 rowCellColSpanOffset += 1; //full already adds 1
             } else {
+                var eRowCellText = u_eRowCellText.value();
                 switch (eRowCellText) {
                     case CELL_EMPTY -> {
                         d.ci("calcultaeRowCellColSpanOffset.E(", currentRowIndex, "," + ci, ")[", eRowCellText, "]");
@@ -419,11 +417,27 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
         TGS_StreamUtils.reverse(0, spanList.size()).forEach(i -> {//FRW NOT WORKING
             var tokens = TS_StringUtils.toList_spc(spanList.get(i));
             var rIdx = TGS_CastUtils.toInteger(tokens.get(0));
+            if (rIdx.isExcuse()) {
+                d.ce("endTable", rIdx.excuse());
+                return;
+            }
             var cIdx = TGS_CastUtils.toInteger(tokens.get(1));
+            if (cIdx.isExcuse()) {
+                d.ce("endTable", cIdx.excuse());
+                return;
+            }
             var rSpan = TGS_CastUtils.toInteger(tokens.get(2));
+            if (rSpan.isExcuse()) {
+                d.ce("endTable", rSpan.excuse());
+                return;
+            }
             var cSpan = TGS_CastUtils.toInteger(tokens.get(3));
+            if (cSpan.isExcuse()) {
+                d.ce("endTable", cSpan.excuse());
+                return;
+            }
             d.ci("endTable.INFO: TS_MIFDOCX.endTable -> cell ri/ci/rc/cs:", rIdx, cIdx, rSpan, cSpan);
-            docx.mergeCell_bySpan(table, rIdx, cIdx, rSpan, cSpan, table_relColSizes);
+            docx.mergeCell_bySpan(table, rIdx.value(), cIdx.value(), rSpan.value(), cSpan.value(), table_relColSizes);
         });
         currentRowIndex = 0;
         table = null;
@@ -448,8 +462,8 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
         }
         return true;
     }
-    
-     private static String getHexColor(String fontColor) {
+
+    private static String getHexColor(String fontColor) {
         if (fontColor == null) {
             return "000000";
         }

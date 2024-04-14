@@ -28,8 +28,10 @@ import com.tugalsan.api.file.img.server.*;
 import com.tugalsan.api.string.server.*;
 import com.tugalsan.api.log.server.*;
 import com.tugalsan.api.stream.client.*;
+import com.tugalsan.api.union.client.TGS_UnionExcuseVoid;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
-public class TS_FileDocxUtils implements AutoCloseable {
+public class TS_FileDocxUtils {
 
     final private static TS_Log d = TS_Log.of(TS_FileDocxUtils.class);
 
@@ -117,204 +119,184 @@ public class TS_FileDocxUtils implements AutoCloseable {
     }
 
     public TS_FileDocxUtils(Path filePath) {
-        TGS_UnSafe.run(() -> {
-            this.filePath = filePath;
-            doc = new XWPFDocument();
-        });
+        this.filePath = filePath;
+        doc = new XWPFDocument();
     }
 
     public Path getFile() {
         return filePath;
     }
 
-    @Override
-    public void close() {
-        TGS_UnSafe.run(() -> {
+    public TGS_UnionExcuseVoid close() {
+        try (var fileOut = Files.newOutputStream(filePath)) {
             d.ci("close.");
             doc.createParagraph();
-            try ( var fileOut = Files.newOutputStream(filePath)) {
-                doc.write(fileOut);
-                fileOut.close();
-            }
-        });
+            doc.write(fileOut);
+            fileOut.close();
+            return TGS_UnionExcuseVoid.ofVoid();
+        } catch (IOException ex) {
+            return TGS_UnionExcuseVoid.ofExcuse(ex);
+        }
     }
 
-    public boolean addImage(XWPFParagraph p, CharSequence imgFile) {
+    public TGS_UnionExcuseVoid addImage(XWPFParagraph p, CharSequence imgFile) {
         d.ci("addImage", "p", p, "imgFile", imgFile);
         return addImage(p, imgFile, 200, 200);
     }
 
-    public boolean addImage(XWPFParagraph p, CharSequence imgFile, int width, int height) {
-        return TGS_UnSafe.call(() -> {
-            var imgFileStr = imgFile.toString();
-            d.ci("addImage", "p", p, "imgFile", imgFileStr, "width", width, "height", height);
-            if (p == null) {
-                d.ce("addImage.ERROR: TK_DOCXFile.addImage.p == null");
-                return false;
+    public TGS_UnionExcuseVoid addImage(XWPFParagraph p, CharSequence imgFile, int width, int height) {
+        var imgFileStr = imgFile.toString();
+        d.ci("addImage", "p", p, "imgFile", imgFileStr, "width", width, "height", height);
+        if (p == null) {
+            return TGS_UnionExcuseVoid.ofExcuse(d.className, "addImage", "addImage.ERROR: TK_DOCXFile.addImage.p == null");
+        }
+        if (d.infoEnable) {
+            var bi = TS_FileImageUtils.readImageFromFile(Path.of(imgFileStr), true);
+            if (bi.isExcuse()) {
+                return bi.toExcuseVoid();
             }
-            if (d.infoEnable) {
-                var bi = TS_FileImageUtils.readImageFromFile(Path.of(imgFileStr), true);
-                d.ci("addImage", "imgWidth", bi.getWidth(), "imgHeight", bi.getHeight(), "inputWidth", width, "inputheight", height);
-            }
+            d.ci("addImage", "imgWidth", bi.value().getWidth(), "imgHeight", bi.value().getHeight(), "inputWidth", width, "inputheight", height);
+        }
 
-            Integer format = null;
-            var imgFileStrLC = TGS_CharSetCast.toLocaleLowerCase(imgFileStr);
-            if (imgFileStr.endsWith(".emf")) {
-                format = XWPFDocument.PICTURE_TYPE_EMF;
-            } else if (imgFileStrLC.endsWith(".wmf") || imgFileStrLC.endsWith(".wmf")) {
-                format = XWPFDocument.PICTURE_TYPE_WMF;
-            } else if (imgFileStrLC.endsWith(".pict") || imgFileStrLC.endsWith(".pict")) {
-                format = XWPFDocument.PICTURE_TYPE_PICT;
-            } else if (imgFileStrLC.endsWith(".pıct") || imgFileStrLC.endsWith(".pıct")) {
-                format = XWPFDocument.PICTURE_TYPE_PICT;
-            } else if (imgFileStrLC.endsWith(".jpeg") || imgFileStrLC.endsWith(".jpeg")) {
-                format = XWPFDocument.PICTURE_TYPE_JPEG;
-            } else if (imgFileStrLC.endsWith(".jpg") || imgFileStrLC.endsWith(".jpg")) {
-                format = XWPFDocument.PICTURE_TYPE_JPEG;
-            } else if (imgFileStrLC.endsWith(".png") || imgFileStrLC.endsWith(".png")) {
-                format = XWPFDocument.PICTURE_TYPE_PNG;
-            } else if (imgFileStrLC.endsWith(".dib") || imgFileStrLC.endsWith(".dib")) {
-                format = XWPFDocument.PICTURE_TYPE_DIB;
-            } else if (imgFileStrLC.endsWith(".dıb") || imgFileStrLC.endsWith(".dıb")) {
-                format = XWPFDocument.PICTURE_TYPE_DIB;
-            } else if (imgFileStrLC.endsWith(".gif") || imgFileStrLC.endsWith(".gif")) {
-                format = XWPFDocument.PICTURE_TYPE_GIF;
-            } else if (imgFileStrLC.endsWith(".gıf") || imgFileStrLC.endsWith(".gıf")) {
-                format = XWPFDocument.PICTURE_TYPE_GIF;
-            } else if (imgFileStrLC.endsWith(".tiff") || imgFileStrLC.endsWith(".tiff")) {
-                format = XWPFDocument.PICTURE_TYPE_TIFF;
-            } else if (imgFileStrLC.endsWith(".tıff") || imgFileStrLC.endsWith(".tıff")) {
-                format = XWPFDocument.PICTURE_TYPE_TIFF;
-            } else if (imgFileStrLC.endsWith(".tif") || imgFileStrLC.endsWith(".tif")) {
-                format = XWPFDocument.PICTURE_TYPE_TIFF;
-            } else if (imgFileStrLC.endsWith(".tıf") || imgFileStrLC.endsWith(".tıf")) {
-                format = XWPFDocument.PICTURE_TYPE_TIFF;
-            } else if (imgFileStrLC.endsWith(".eps") || imgFileStrLC.endsWith(".eps")) {
-                format = XWPFDocument.PICTURE_TYPE_EPS;
-            } else if (imgFileStrLC.endsWith(".bmp") || imgFileStrLC.endsWith(".bmp")) {
-                format = XWPFDocument.PICTURE_TYPE_BMP;
-            } else if (imgFileStrLC.endsWith(".wpg") || imgFileStrLC.endsWith(".wpg")) {
-                format = XWPFDocument.PICTURE_TYPE_WPG;
-            }
-            if (format == null) {
-                d.ce("addImage.Unsupported picture: " + imgFileStr + ". Expected emf|wmf|pict|jpeg|png|dib|gif|tiff|eps|bmp|wpg");
-                return false;
-            } else {
+        Integer format = null;
+        var imgFileStrLC = TGS_CharSetCast.toLocaleLowerCase(imgFileStr);
+        if (imgFileStr.endsWith(".emf")) {
+            format = XWPFDocument.PICTURE_TYPE_EMF;
+        } else if (imgFileStrLC.endsWith(".wmf") || imgFileStrLC.endsWith(".wmf")) {
+            format = XWPFDocument.PICTURE_TYPE_WMF;
+        } else if (imgFileStrLC.endsWith(".pict") || imgFileStrLC.endsWith(".pict")) {
+            format = XWPFDocument.PICTURE_TYPE_PICT;
+        } else if (imgFileStrLC.endsWith(".pıct") || imgFileStrLC.endsWith(".pıct")) {
+            format = XWPFDocument.PICTURE_TYPE_PICT;
+        } else if (imgFileStrLC.endsWith(".jpeg") || imgFileStrLC.endsWith(".jpeg")) {
+            format = XWPFDocument.PICTURE_TYPE_JPEG;
+        } else if (imgFileStrLC.endsWith(".jpg") || imgFileStrLC.endsWith(".jpg")) {
+            format = XWPFDocument.PICTURE_TYPE_JPEG;
+        } else if (imgFileStrLC.endsWith(".png") || imgFileStrLC.endsWith(".png")) {
+            format = XWPFDocument.PICTURE_TYPE_PNG;
+        } else if (imgFileStrLC.endsWith(".dib") || imgFileStrLC.endsWith(".dib")) {
+            format = XWPFDocument.PICTURE_TYPE_DIB;
+        } else if (imgFileStrLC.endsWith(".dıb") || imgFileStrLC.endsWith(".dıb")) {
+            format = XWPFDocument.PICTURE_TYPE_DIB;
+        } else if (imgFileStrLC.endsWith(".gif") || imgFileStrLC.endsWith(".gif")) {
+            format = XWPFDocument.PICTURE_TYPE_GIF;
+        } else if (imgFileStrLC.endsWith(".gıf") || imgFileStrLC.endsWith(".gıf")) {
+            format = XWPFDocument.PICTURE_TYPE_GIF;
+        } else if (imgFileStrLC.endsWith(".tiff") || imgFileStrLC.endsWith(".tiff")) {
+            format = XWPFDocument.PICTURE_TYPE_TIFF;
+        } else if (imgFileStrLC.endsWith(".tıff") || imgFileStrLC.endsWith(".tıff")) {
+            format = XWPFDocument.PICTURE_TYPE_TIFF;
+        } else if (imgFileStrLC.endsWith(".tif") || imgFileStrLC.endsWith(".tif")) {
+            format = XWPFDocument.PICTURE_TYPE_TIFF;
+        } else if (imgFileStrLC.endsWith(".tıf") || imgFileStrLC.endsWith(".tıf")) {
+            format = XWPFDocument.PICTURE_TYPE_TIFF;
+        } else if (imgFileStrLC.endsWith(".eps") || imgFileStrLC.endsWith(".eps")) {
+            format = XWPFDocument.PICTURE_TYPE_EPS;
+        } else if (imgFileStrLC.endsWith(".bmp") || imgFileStrLC.endsWith(".bmp")) {
+            format = XWPFDocument.PICTURE_TYPE_BMP;
+        } else if (imgFileStrLC.endsWith(".wpg") || imgFileStrLC.endsWith(".wpg")) {
+            format = XWPFDocument.PICTURE_TYPE_WPG;
+        }
+        if (format == null) {
+            return TGS_UnionExcuseVoid.ofExcuse(d.className, "addImage", "addImage.Unsupported picture: " + imgFileStr + ". Expected emf|wmf|pict|jpeg|png|dib|gif|tiff|eps|bmp|wpg");
+        }
 //        r.setText(imgFile);
 //        r.addBreak();
-                d.ci("addImage.INFO: TK_DOCXFile.run.addPicture.BEGIN...");
-                try ( var is = new FileInputStream(imgFileStr)) {
-                    var r = p.createRun();
-                    r.addPicture(is, format, imgFileStr, Units.toEMU(width), Units.toEMU(height)); // 200x200 pixels
-                }
-                d.ci("addImage.INFO: TK_DOCXFile.run.addPicture.END");
-                return true;
-            }
-        });
+        d.ci("addImage.INFO: TK_DOCXFile.run.addPicture.BEGIN...");
+        try (var is = new FileInputStream(imgFileStr)) {
+            var r = p.createRun();
+            r.addPicture(is, format, imgFileStr, Units.toEMU(width), Units.toEMU(height)); // 200x200 pixels
+        } catch (InvalidFormatException | IOException ex) {
+            return TGS_UnionExcuseVoid.ofExcuse(ex);
+        }
+        d.ci("addImage.INFO: TK_DOCXFile.run.addPicture.END");
+        return TGS_UnionExcuseVoid.ofVoid();
     }
 
-    public String mergeCell_bySpan(XWPFTable table, int rowIdx, int colIdx, int rowSpan, int colSpan, int[] widthsPercent) {
+    public TGS_UnionExcuseVoid mergeCell_bySpan(XWPFTable table, int rowIdx, int colIdx, int rowSpan, int colSpan, int[] widthsPercent) {
         d.ci("mergeCell_bySpan table:" + table + ", RI:" + rowIdx + ", CI: " + colIdx + ", RSP: " + rowSpan + ", CSP:" + colSpan);
         if (rowSpan < 1) {
-            return "ERROR: mergeCell_bySpan.rowSpan:" + rowSpan + " < 1";
+            return TGS_UnionExcuseVoid.ofExcuse(d.className, "mergeCell_bySpan", "ERROR: mergeCell_bySpan.rowSpan:" + rowSpan + " < 1");
         }
         if (colSpan < 1) {
-            return "ERROR: mergeCell_bySpan.colSpan:" + colSpan + " < 1";
+            return TGS_UnionExcuseVoid.ofExcuse(d.className, "mergeCell_bySpan", "ERROR: mergeCell_bySpan.colSpan:" + colSpan + " < 1");
         }
         return mergeCell_byIndex(table, rowIdx, rowIdx + rowSpan - 1, colIdx, colIdx + colSpan - 1, widthsPercent);
     }
 
-    private String mergeCell_byIndex(XWPFTable table, int rowIdxFrom, int rowIdxTo, int colIdxFrom, int colIdxTo, int[] widthsPercent) {
-        return TGS_UnSafe.call(() -> {
-            d.ci("mergeCell_byIndex -> RF:" + rowIdxFrom + ", RT:" + rowIdxTo + ", CF:" + colIdxFrom + ", CT:" + colIdxTo);
-            if (rowIdxTo < rowIdxFrom) {
-                return "ERROR: mergeCell_byIndex.rowIdxTo:" + rowIdxTo + " < rowIdxFrom:" + rowIdxFrom;
-            }
-            if (colIdxTo < colIdxFrom) {
-                return "ERROR: mergeCell_byIndex.colIdxTo:" + colIdxTo + " < colIdxFrom:" + colIdxFrom;
-            }
-            while (table.getRows().size() <= rowIdxTo) {
-                d.ci("mergeCell_byIndex.incRow -> rs: " + table.getRows().size());
-                addTableRow(table, widthsPercent.length);
-            }
-            if (rowIdxFrom != rowIdxTo) {
-                mergeTableCells_Rows(table, rowIdxFrom, rowIdxTo, colIdxFrom);
-            }
-            if (colIdxFrom != colIdxTo) {
-                TGS_StreamUtils.reverse(rowIdxFrom, rowIdxTo + 1).forEach(ri -> {
-                    mergeTableCells_Cols(table, ri, colIdxFrom, colIdxTo);
-                    var newColumnWidth = IntStream.range(colIdxFrom, colIdxTo + 1).map(ci -> widthsPercent[ci]).sum();
-                    setTableColWidth(table, ri, colIdxFrom, newColumnWidth);
+    private TGS_UnionExcuseVoid mergeCell_byIndex(XWPFTable table, int rowIdxFrom, int rowIdxTo, int colIdxFrom, int colIdxTo, int[] widthsPercent) {
+        d.ci("mergeCell_byIndex -> RF:" + rowIdxFrom + ", RT:" + rowIdxTo + ", CF:" + colIdxFrom + ", CT:" + colIdxTo);
+        if (rowIdxTo < rowIdxFrom) {
+            return TGS_UnionExcuseVoid.ofExcuse(d.className, "mergeCell_byIndex", "ERROR: mergeCell_byIndex.rowIdxTo:" + rowIdxTo + " < rowIdxFrom:" + rowIdxFrom);
+        }
+        if (colIdxTo < colIdxFrom) {
+            return TGS_UnionExcuseVoid.ofExcuse(d.className, "mergeCell_byIndex", "ERROR: mergeCell_byIndex.colIdxTo:" + colIdxTo + " < colIdxFrom:" + colIdxFrom);
+        }
+        while (table.getRows().size() <= rowIdxTo) {
+            d.ci("mergeCell_byIndex.incRow -> rs: " + table.getRows().size());
+            addTableRow(table, widthsPercent.length);
+        }
+        if (rowIdxFrom != rowIdxTo) {
+            mergeTableCells_Rows(table, rowIdxFrom, rowIdxTo, colIdxFrom);
+        }
+        if (colIdxFrom != colIdxTo) {
+            TGS_StreamUtils.reverse(rowIdxFrom, rowIdxTo + 1).forEach(ri -> {
+                mergeTableCells_Cols(table, ri, colIdxFrom, colIdxTo);
+                var newColumnWidth = IntStream.range(colIdxFrom, colIdxTo + 1).map(ci -> widthsPercent[ci]).sum();
+                setTableColWidth(table, ri, colIdxFrom, newColumnWidth);
+            });
+        }
+        return TGS_UnionExcuseVoid.ofVoid();
+    }
+
+    private TGS_UnionExcuseVoid mergeTableCells_Rows(XWPFTable table, int rowIdxFrom, int rowIdxTo, int colIdx) {
+        d.ci("mergeTableCells_Rows -> RF:" + rowIdxFrom + ", RT:" + rowIdxTo + ", CI:" + colIdx);
+        for (var rowIndex = rowIdxFrom; rowIndex <= rowIdxTo; rowIndex++) {
+            var cell = table.getRow(rowIndex).getCell(colIdx);
+            var vmerge = CTVMerge.Factory.newInstance();
+            if (rowIndex == rowIdxFrom) {
+                // The first merged cell is set with RESTART merge value
+                vmerge.setVal(STMerge.RESTART);
+            } else {
+                // Cells which join (merge) the first one, are set with CONTINUE
+                vmerge.setVal(STMerge.CONTINUE);
+                // and the content should be removed
+                TGS_StreamUtils.reverse(0, cell.getParagraphs().size()).forEach(i -> {
+                    cell.removeParagraph(0);
                 });
+                cell.addParagraph();
             }
-            return null;
-        }, e -> {
-            d.ce("mergeCell_byIndex.ERROR.e:" + e.getMessage());
-            e.printStackTrace();
-            return null;
-        });
-    }
-
-    private boolean mergeTableCells_Rows(XWPFTable table, int rowIdxFrom, int rowIdxTo, int colIdx) {
-        return TGS_UnSafe.call(() -> {
-            d.ci("mergeTableCells_Rows -> RF:" + rowIdxFrom + ", RT:" + rowIdxTo + ", CI:" + colIdx);
-            for (var rowIndex = rowIdxFrom; rowIndex <= rowIdxTo; rowIndex++) {
-                var cell = table.getRow(rowIndex).getCell(colIdx);
-                var vmerge = CTVMerge.Factory.newInstance();
-                if (rowIndex == rowIdxFrom) {
-                    // The first merged cell is set with RESTART merge value
-                    vmerge.setVal(STMerge.RESTART);
-                } else {
-                    // Cells which join (merge) the first one, are set with CONTINUE
-                    vmerge.setVal(STMerge.CONTINUE);
-                    // and the content should be removed
-                    TGS_StreamUtils.reverse(0, cell.getParagraphs().size()).forEach(i -> {
-                        cell.removeParagraph(0);
-                    });
-                    cell.addParagraph();
-                }
-                // Try getting the TcPr. Not simply setting an new one every time.
-                var tcPr = cell.getCTTc().getTcPr();
-                if (tcPr == null) {
-                    tcPr = cell.getCTTc().addNewTcPr();
-                }
-                tcPr.setVMerge(vmerge);
-            }
-            return true;
-        }, e -> {
-            d.ce("mergeTableCells_Rows.ERROR.e:" + e.getMessage());
-            e.printStackTrace();
-            return false;
-        });
-    }
-
-    //merging horizontally by setting grid span instead of using CTHMerge
-    private boolean mergeTableCells_Cols(XWPFTable table, int rowIdx, int colIdxFrom, int colIdxTo) {
-        return TGS_UnSafe.call(() -> {
-            d.ci("mergeTableCells_Cols -> RI:" + rowIdx + ", CF:" + colIdxFrom + ", CT:" + colIdxTo);
-            var cell = table.getRow(rowIdx).getCell(colIdxFrom);
             // Try getting the TcPr. Not simply setting an new one every time.
             var tcPr = cell.getCTTc().getTcPr();
             if (tcPr == null) {
                 tcPr = cell.getCTTc().addNewTcPr();
             }
-            // The first merged cell has grid span property set
-            if (tcPr.isSetGridSpan()) {
-                tcPr.getGridSpan().setVal(BigInteger.valueOf(colIdxTo - colIdxFrom + 1));
-            } else {
-                tcPr.addNewGridSpan().setVal(BigInteger.valueOf(colIdxTo - colIdxFrom + 1));
-            }
-            // Cells which join (merge) the first one, must be removed
-            for (var colIndex = colIdxTo; colIndex > colIdxFrom; colIndex--) {
-                table.getRow(rowIdx).getCtRow().removeTc(colIndex);
-                table.getRow(rowIdx).removeCell(colIndex);
-            }
-            return true;
-        }, e -> {
-            d.ce("mergeTableCells_Cols.ERROR.e:" + e.getMessage());
-            e.printStackTrace();
-            return false;
-        });
+            tcPr.setVMerge(vmerge);
+        }
+        return TGS_UnionExcuseVoid.ofVoid();
+    }
+
+    //merging horizontally by setting grid span instead of using CTHMerge
+    private TGS_UnionExcuseVoid mergeTableCells_Cols(XWPFTable table, int rowIdx, int colIdxFrom, int colIdxTo) {
+        d.ci("mergeTableCells_Cols -> RI:" + rowIdx + ", CF:" + colIdxFrom + ", CT:" + colIdxTo);
+        var cell = table.getRow(rowIdx).getCell(colIdxFrom);
+        // Try getting the TcPr. Not simply setting an new one every time.
+        var tcPr = cell.getCTTc().getTcPr();
+        if (tcPr == null) {
+            tcPr = cell.getCTTc().addNewTcPr();
+        }
+        // The first merged cell has grid span property set
+        if (tcPr.isSetGridSpan()) {
+            tcPr.getGridSpan().setVal(BigInteger.valueOf(colIdxTo - colIdxFrom + 1));
+        } else {
+            tcPr.addNewGridSpan().setVal(BigInteger.valueOf(colIdxTo - colIdxFrom + 1));
+        }
+        // Cells which join (merge) the first one, must be removed
+        for (var colIndex = colIdxTo; colIndex > colIdxFrom; colIndex--) {
+            table.getRow(rowIdx).getCtRow().removeTc(colIndex);
+            table.getRow(rowIdx).removeCell(colIndex);
+        }
+        return TGS_UnionExcuseVoid.ofVoid();
     }
 
     public static double TABLE_WITH_FACTOR_A3_PORT() {
