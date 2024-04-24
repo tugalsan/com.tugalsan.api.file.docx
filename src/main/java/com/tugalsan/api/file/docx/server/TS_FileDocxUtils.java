@@ -1,6 +1,7 @@
 package com.tugalsan.api.file.docx.server;
 
 import com.tugalsan.api.charset.client.TGS_CharSet;
+import com.tugalsan.api.charset.client.TGS_CharSetCast;
 import java.io.*;
 import java.math.*;
 import java.nio.file.*;
@@ -159,7 +160,7 @@ public class TS_FileDocxUtils implements AutoCloseable {
             }
 
             Integer format = null;
-            var imgFileStrLC = TGS_CharSet.cmn().languageDefault().toLowerCase(imgFileStr);
+            var imgFileStrLC = TGS_CharSetCast.current().toLowerCase(imgFileStr);
             if (imgFileStr.endsWith(".emf")) {
                 format = XWPFDocument.PICTURE_TYPE_EMF;
             } else if (imgFileStrLC.endsWith(".wmf") || imgFileStrLC.endsWith(".wmf")) {
