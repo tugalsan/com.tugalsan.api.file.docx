@@ -1,6 +1,5 @@
 package com.tugalsan.api.file.docx.server;
 
-import com.tugalsan.api.charset.client.TGS_CharSet;
 import com.tugalsan.api.charset.client.TGS_CharSetCast;
 import java.io.*;
 import java.math.*;
@@ -29,6 +28,7 @@ import com.tugalsan.api.file.img.server.*;
 import com.tugalsan.api.string.server.*;
 import com.tugalsan.api.log.server.*;
 import com.tugalsan.api.stream.client.*;
+import com.tugalsan.api.union.client.TGS_UnionExcuseVoid;
 import com.tugalsan.api.unsafe.client.*;
 
 public class TS_FileDocxUtils implements AutoCloseable {
@@ -134,7 +134,7 @@ public class TS_FileDocxUtils implements AutoCloseable {
         TGS_UnSafe.run(() -> {
             d.ci("close.");
             doc.createParagraph();
-            try ( var fileOut = Files.newOutputStream(filePath)) {
+            try (var fileOut = Files.newOutputStream(filePath)) {
                 doc.write(fileOut);
                 fileOut.close();
             }
@@ -205,7 +205,7 @@ public class TS_FileDocxUtils implements AutoCloseable {
 //        r.setText(imgFile);
 //        r.addBreak();
                 d.ci("addImage.INFO: TK_DOCXFile.run.addPicture.BEGIN...");
-                try ( var is = new FileInputStream(imgFileStr)) {
+                try (var is = new FileInputStream(imgFileStr)) {
                     var r = p.createRun();
                     r.addPicture(is, format, imgFileStr, Units.toEMU(width), Units.toEMU(height)); // 200x200 pixels
                 }
@@ -215,32 +215,35 @@ public class TS_FileDocxUtils implements AutoCloseable {
         });
     }
 
-    public String mergeCell_bySpan(XWPFTable table, int rowIdx, int colIdx, int rowSpan, int colSpan, int[] widthsPercent) {
+    public TGS_UnionExcuseVoid mergeCell_bySpan(XWPFTable table, int rowIdx, int colIdx, int rowSpan, int colSpan, int[] widthsPercent) {
         d.ci("mergeCell_bySpan table:" + table + ", RI:" + rowIdx + ", CI: " + colIdx + ", RSP: " + rowSpan + ", CSP:" + colSpan);
         if (rowSpan < 1) {
-            return "ERROR: mergeCell_bySpan.rowSpan:" + rowSpan + " < 1";
+            return TGS_UnionExcuseVoid.ofExcuse(d.className, "mergeCell_bySpan", "ERROR: mergeCell_bySpan.rowSpan:" + rowSpan + " < 1");
         }
         if (colSpan < 1) {
-            return "ERROR: mergeCell_bySpan.colSpan:" + colSpan + " < 1";
+            return TGS_UnionExcuseVoid.ofExcuse(d.className, "mergeCell_bySpan", "ERROR: mergeCell_bySpan.colSpan:" + colSpan + " < 1");
         }
         return mergeCell_byIndex(table, rowIdx, rowIdx + rowSpan - 1, colIdx, colIdx + colSpan - 1, widthsPercent);
     }
 
-    private String mergeCell_byIndex(XWPFTable table, int rowIdxFrom, int rowIdxTo, int colIdxFrom, int colIdxTo, int[] widthsPercent) {
+    private TGS_UnionExcuseVoid mergeCell_byIndex(XWPFTable table, int rowIdxFrom, int rowIdxTo, int colIdxFrom, int colIdxTo, int[] widthsPercent) {
         return TGS_UnSafe.call(() -> {
             d.ci("mergeCell_byIndex -> RF:" + rowIdxFrom + ", RT:" + rowIdxTo + ", CF:" + colIdxFrom + ", CT:" + colIdxTo);
             if (rowIdxTo < rowIdxFrom) {
-                return "ERROR: mergeCell_byIndex.rowIdxTo:" + rowIdxTo + " < rowIdxFrom:" + rowIdxFrom;
+                return TGS_UnionExcuseVoid.ofExcuse(d.className, "mergeCell_byIndex", "ERROR: mergeCell_byIndex.rowIdxTo:" + rowIdxTo + " < rowIdxFrom:" + rowIdxFrom);
             }
             if (colIdxTo < colIdxFrom) {
-                return "ERROR: mergeCell_byIndex.colIdxTo:" + colIdxTo + " < colIdxFrom:" + colIdxFrom;
+                return TGS_UnionExcuseVoid.ofExcuse(d.className, "mergeCell_byIndex", "ERROR: mergeCell_byIndex.colIdxTo:" + colIdxTo + " < colIdxFrom:" + colIdxFrom);
             }
             while (table.getRows().size() <= rowIdxTo) {
                 d.ci("mergeCell_byIndex.incRow -> rs: " + table.getRows().size());
                 addTableRow(table, widthsPercent.length);
             }
             if (rowIdxFrom != rowIdxTo) {
-                mergeTableCells_Rows(table, rowIdxFrom, rowIdxTo, colIdxFrom);
+                var u = mergeTableCells_Rows(table, rowIdxFrom, rowIdxTo, colIdxFrom);
+                if (u.isExcuse()) {
+                    return u;
+                }
             }
             if (colIdxFrom != colIdxTo) {
                 TGS_StreamUtils.reverse(rowIdxFrom, rowIdxTo + 1).forEach(ri -> {
@@ -249,15 +252,13 @@ public class TS_FileDocxUtils implements AutoCloseable {
                     setTableColWidth(table, ri, colIdxFrom, newColumnWidth);
                 });
             }
-            return null;
+            return TGS_UnionExcuseVoid.ofVoid();
         }, e -> {
-            d.ce("mergeCell_byIndex.ERROR.e:" + e.getMessage());
-            e.printStackTrace();
-            return null;
+            return TGS_UnionExcuseVoid.ofExcuse(e);
         });
     }
 
-    private boolean mergeTableCells_Rows(XWPFTable table, int rowIdxFrom, int rowIdxTo, int colIdx) {
+    private TGS_UnionExcuseVoid mergeTableCells_Rows(XWPFTable table, int rowIdxFrom, int rowIdxTo, int colIdx) {
         return TGS_UnSafe.call(() -> {
             d.ci("mergeTableCells_Rows -> RF:" + rowIdxFrom + ", RT:" + rowIdxTo + ", CI:" + colIdx);
             for (var rowIndex = rowIdxFrom; rowIndex <= rowIdxTo; rowIndex++) {
@@ -282,16 +283,14 @@ public class TS_FileDocxUtils implements AutoCloseable {
                 }
                 tcPr.setVMerge(vmerge);
             }
-            return true;
+            return TGS_UnionExcuseVoid.ofVoid();
         }, e -> {
-            d.ce("mergeTableCells_Rows.ERROR.e:" + e.getMessage());
-            e.printStackTrace();
-            return false;
+            return TGS_UnionExcuseVoid.ofExcuse(e);
         });
     }
 
     //merging horizontally by setting grid span instead of using CTHMerge
-    private boolean mergeTableCells_Cols(XWPFTable table, int rowIdx, int colIdxFrom, int colIdxTo) {
+    private TGS_UnionExcuseVoid mergeTableCells_Cols(XWPFTable table, int rowIdx, int colIdxFrom, int colIdxTo) {
         return TGS_UnSafe.call(() -> {
             d.ci("mergeTableCells_Cols -> RI:" + rowIdx + ", CF:" + colIdxFrom + ", CT:" + colIdxTo);
             var cell = table.getRow(rowIdx).getCell(colIdxFrom);
@@ -311,11 +310,9 @@ public class TS_FileDocxUtils implements AutoCloseable {
                 table.getRow(rowIdx).getCtRow().removeTc(colIndex);
                 table.getRow(rowIdx).removeCell(colIndex);
             }
-            return true;
+            return TGS_UnionExcuseVoid.ofVoid();
         }, e -> {
-            d.ce("mergeTableCells_Cols.ERROR.e:" + e.getMessage());
-            e.printStackTrace();
-            return false;
+            return TGS_UnionExcuseVoid.ofExcuse(e);
         });
     }
 
