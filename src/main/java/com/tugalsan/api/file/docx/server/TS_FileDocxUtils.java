@@ -25,7 +25,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STTblWidth;
 import com.tugalsan.api.file.img.server.*;
-import com.tugalsan.api.string.server.*;
+import com.tugalsan.api.string.client.*;
 import com.tugalsan.api.log.server.*;
 import com.tugalsan.api.stream.client.*;
 import com.tugalsan.api.union.client.TGS_UnionExcuseVoid;
@@ -485,7 +485,7 @@ public class TS_FileDocxUtils implements AutoCloseable {
 
     public void addText(XWPFParagraph p, CharSequence text, boolean isBold, boolean isItalic, boolean isUnderlined, int fontSize, CharSequence fontColor) {
         d.ci("addText", "p", p, "text", text);
-        var tokens = TS_StringUtils.toList(text, "\n");
+        var tokens = TGS_StringUtils.jre().toList(text, "\n");
         var tokenCount = 0;
         for (var t : tokens) {
             tokenCount++;

@@ -2,7 +2,7 @@ package com.tugalsan.api.file.docx.server;
 
 import com.tugalsan.api.callable.client.TGS_CallableType1_Run;
 import com.tugalsan.api.file.common.server.TS_FileCommonAbstract;
-import com.tugalsan.api.string.server.*;
+import com.tugalsan.api.string.client.*;
 import com.tugalsan.api.cast.client.*;
 import java.awt.image.*;
 import java.nio.file.*;
@@ -113,7 +113,7 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
             return true;
         }
         d.ci("addText");
-        var lines = TS_StringUtils.toList(text, "\n");
+        var lines = TGS_StringUtils.jre().toList(text, "\n");
         var fh = fileCommonConfig.fontHeight + FONT_HEIGHT_OFFSET() < 1 ? 1 : fileCommonConfig.fontHeight + FONT_HEIGHT_OFFSET();
         for (var i = 0; i < lines.size(); i++) {
             var line = lines.get(i);
@@ -124,7 +124,7 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
                 } else {
                     var k = 0.8f;
                     var fh_half = (int) (fh * k) < 1 ? 1 : (int) (fh * k);
-                    var tags = TS_StringUtils.toList_spc(line);
+                    var tags = TGS_StringUtils.jre().toList_spc(line);
                     IntStream.range(0, tags.size()).forEachOrdered(j -> {
                         var tag = tags.get(j);
                         var dbl = TGS_StringDouble.of(text);
@@ -420,7 +420,7 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
         docx.setTableColWidths(table, table_relColSizes);
 
         TGS_StreamUtils.reverse(0, spanList.size()).forEach(i -> {//FRW NOT WORKING
-            var tokens = TS_StringUtils.toList_spc(spanList.get(i));
+            var tokens = TGS_StringUtils.jre().toList_spc(spanList.get(i));
             var rIdx = TGS_CastUtils.toInteger(tokens.get(0));
             var cIdx = TGS_CastUtils.toInteger(tokens.get(1));
             var rSpan = TGS_CastUtils.toInteger(tokens.get(2));
