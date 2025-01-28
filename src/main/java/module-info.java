@@ -1,12 +1,13 @@
 module com.tugalsan.api.file.docx {
+    requires org.apache.poi.poi;
+    requires org.apache.poi.ooxml;
+    requires org.apache.poi.ooxml.schemas;
+    requires org.apache.poi.scratchpad;
+    
     requires java.desktop;
-    requires poi;
-    requires poi.ooxml;
-    requires ooxml.schemas;
     requires com.tugalsan.api.log;
     requires com.tugalsan.api.cast;
-    requires com.tugalsan.api.file;
-    
+    requires com.tugalsan.api.file;    
     requires com.tugalsan.api.url;
     requires com.tugalsan.api.list;
     requires com.tugalsan.api.union;

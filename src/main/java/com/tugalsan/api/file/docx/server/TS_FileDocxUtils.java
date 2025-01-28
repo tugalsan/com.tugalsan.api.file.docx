@@ -28,6 +28,7 @@ import com.tugalsan.api.file.img.server.*;
 import com.tugalsan.api.string.client.*;
 import com.tugalsan.api.log.server.*;
 import com.tugalsan.api.stream.client.*;
+import com.tugalsan.api.union.client.TGS_UnionExcuse;
 import com.tugalsan.api.union.client.TGS_UnionExcuseVoid;
 import com.tugalsan.api.unsafe.client.*;
 
@@ -35,21 +36,26 @@ public class TS_FileDocxUtils implements AutoCloseable {
 
     final private static TS_Log d = TS_Log.of(TS_FileDocxUtils.class);
 
-    public static Dimension getPageDimension(XWPFDocument doc) {
-        var dim = new Dimension();
-        var document = doc.getDocument();
-        var body = document.getBody();
-        if (!body.isSetSectPr()) {
-            body.addNewSectPr();
-        }
-        var section = body.getSectPr();
-        if (!section.isSetPgSz()) {
-            section.addNewPgSz();
-        }
-        var pageSize = section.getPgSz();
-//        d.setSize(DxaUtil.dxa2points(pageSize.getW()), DxaUtil.dxa2points(pageSize.getH()));
-        dim.setSize(pageSize.getW().intValue(), pageSize.getH().intValue());
-        return dim;
+    public static TGS_UnionExcuse<Dimension> getPageDimension(XWPFDocument doc) {
+        return TGS_UnSafe.call(() -> {
+            var dim = new Dimension();
+            var document = doc.getDocument();
+            var body = document.getBody();
+            if (!body.isSetSectPr()) {
+                body.addNewSectPr();
+            }
+            var section = body.getSectPr();
+            if (!section.isSetPgSz()) {
+                section.addNewPgSz();
+            }
+            var pageSize = section.getPgSz();
+            if (pageSize.getW() instanceof BigInteger pageSizeWidth && pageSize.getH() instanceof BigInteger pageSizeHeight) {
+                dim.setSize(pageSizeWidth.intValueExact(), pageSizeHeight.intValueExact());
+            } else {
+                TGS_UnSafe.thrw(d.className, "getPageDimension", "NOT pageSize.getW() instanceof BigInteger pageSizeWidth && pageSize.getH() instanceof BigInteger pageSizeHeight -> " + pageSize.getW());
+            }
+            return TGS_UnionExcuse.of(dim);
+        }, e -> TGS_UnionExcuse.ofExcuse(e));
     }
 
     private boolean landscape = false;
