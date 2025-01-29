@@ -3,6 +3,7 @@ module com.tugalsan.api.file.docx {
     requires org.apache.poi.ooxml;
     requires org.apache.poi.ooxml.schemas;
     requires org.apache.poi.scratchpad;
+    requires org.apache.commons.io;
     
     requires java.desktop;
     requires com.tugalsan.api.log;
