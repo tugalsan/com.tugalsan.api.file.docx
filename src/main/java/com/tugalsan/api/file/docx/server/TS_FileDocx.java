@@ -22,6 +22,10 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
 
     final private static TS_Log d = TS_Log.of(TS_FileDocx.class);
 
+    public String getSuperClassName() {
+        return d.className;
+    }
+
     private static int FONT_HEIGHT_OFFSET() {
         return -3;
     }
@@ -452,8 +456,8 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
         }
         return true;
     }
-    
-     private static String getHexColor(String fontColor) {
+
+    private static String getHexColor(String fontColor) {
         if (fontColor == null) {
             return "000000";
         }
