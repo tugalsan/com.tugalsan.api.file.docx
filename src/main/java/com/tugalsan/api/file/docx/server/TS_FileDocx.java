@@ -1,6 +1,6 @@
 package com.tugalsan.api.file.docx.server;
 
-import com.tugalsan.api.function.client.TGS_Func_In1;
+import com.tugalsan.api.function.client.maythrow.uncheckedexceptions.TGS_FuncMTUCE_In1;
 import com.tugalsan.api.file.common.server.TS_FileCommonAbstract;
 import com.tugalsan.api.string.client.*;
 import com.tugalsan.api.cast.client.*;
@@ -16,7 +16,7 @@ import com.tugalsan.api.stream.client.*;
 import com.tugalsan.api.url.client.*;
 import com.tugalsan.api.file.common.server.TS_FileCommonConfig;
 import com.tugalsan.api.file.common.server.TS_FileCommonFontTags;
-import com.tugalsan.api.unsafe.client.TGS_UnSafe;
+import com.tugalsan.api.function.client.TGS_FuncUtils;
 
 public class TS_FileDocx extends TS_FileCommonAbstract {
 
@@ -49,13 +49,13 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
         super(enabled, localFile, remoteFile);
     }
 
-    public static void use(boolean enabled, TS_FileCommonConfig fileCommonConfig, Path localFile, TGS_Url remoteFile, TGS_Func_In1<TS_FileDocx> docx) {
+    public static void use(boolean enabled, TS_FileCommonConfig fileCommonConfig, Path localFile, TGS_Url remoteFile, TGS_FuncMTUCE_In1<TS_FileDocx> docx) {
         var instance = new TS_FileDocx(enabled, localFile, remoteFile);
         try {
             instance.use_init(fileCommonConfig);
             docx.run(instance);
         } catch (Exception e) {
-            TGS_UnSafe.throwIfInterruptedException(e);
+            TGS_FuncUtils.throwIfInterruptedException(e);
             instance.saveFile(e.getMessage());
             throw e;
         } finally {

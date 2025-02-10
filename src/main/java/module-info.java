@@ -13,7 +13,7 @@ module com.tugalsan.api.file.docx {
     requires com.tugalsan.api.list;
     requires com.tugalsan.api.union;
     requires com.tugalsan.api.function;
-    requires com.tugalsan.api.unsafe;
+    
     requires com.tugalsan.api.charset;
     requires com.tugalsan.api.stream;
     requires com.tugalsan.api.string;

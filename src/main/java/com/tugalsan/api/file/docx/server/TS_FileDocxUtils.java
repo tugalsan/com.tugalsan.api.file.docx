@@ -25,19 +25,21 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STTblWidth;
 import com.tugalsan.api.file.img.server.*;
+import com.tugalsan.api.function.client.maythrow.checkedexceptions.TGS_FuncMTCEUtils;
+import com.tugalsan.api.function.client.maythrow.uncheckedexceptions.TGS_FuncMTUCEUtils;
 import com.tugalsan.api.string.client.*;
 import com.tugalsan.api.log.server.*;
 import com.tugalsan.api.stream.client.*;
 import com.tugalsan.api.union.client.TGS_UnionExcuse;
 import com.tugalsan.api.union.client.TGS_UnionExcuseVoid;
-import com.tugalsan.api.unsafe.client.*;
+
 
 public class TS_FileDocxUtils implements AutoCloseable {
 
     final private static TS_Log d = TS_Log.of(TS_FileDocxUtils.class);
 
     public static TGS_UnionExcuse<Dimension> getPageDimension(XWPFDocument doc) {
-        return TGS_UnSafe.call(() -> {
+        return TGS_FuncMTCEUtils.call(() -> {
             var dim = new Dimension();
             var document = doc.getDocument();
             var body = document.getBody();
@@ -52,7 +54,7 @@ public class TS_FileDocxUtils implements AutoCloseable {
             if (pageSize.getW() instanceof BigInteger pageSizeWidth && pageSize.getH() instanceof BigInteger pageSizeHeight) {
                 dim.setSize(pageSizeWidth.intValueExact(), pageSizeHeight.intValueExact());
             } else {
-                TGS_UnSafe.thrw(d.className, "getPageDimension", "NOT pageSize.getW() instanceof BigInteger pageSizeWidth && pageSize.getH() instanceof BigInteger pageSizeHeight -> " + pageSize.getW());
+                TGS_FuncMTUCEUtils.thrw(d.className, "getPageDimension", "NOT pageSize.getW() instanceof BigInteger pageSizeWidth && pageSize.getH() instanceof BigInteger pageSizeHeight -> " + pageSize.getW());
             }
             return TGS_UnionExcuse.of(dim);
         }, e -> TGS_UnionExcuse.ofExcuse(e));
@@ -125,7 +127,7 @@ public class TS_FileDocxUtils implements AutoCloseable {
     }
 
     public TS_FileDocxUtils(Path filePath) {
-        TGS_UnSafe.run(() -> {
+        TGS_FuncMTCEUtils.run(() -> {
             this.filePath = filePath;
             doc = new XWPFDocument();
         });
@@ -137,7 +139,7 @@ public class TS_FileDocxUtils implements AutoCloseable {
 
     @Override
     public void close() {
-        TGS_UnSafe.run(() -> {
+        TGS_FuncMTCEUtils.run(() -> {
             d.ci("close.");
             doc.createParagraph();
             try (var fileOut = Files.newOutputStream(filePath)) {
@@ -153,7 +155,7 @@ public class TS_FileDocxUtils implements AutoCloseable {
     }
 
     public boolean addImage(XWPFParagraph p, CharSequence imgFile, int width, int height) {
-        return TGS_UnSafe.call(() -> {
+        return TGS_FuncMTCEUtils.call(() -> {
             var imgFileStr = imgFile.toString();
             d.ci("addImage", "p", p, "imgFile", imgFileStr, "width", width, "height", height);
             if (p == null) {
@@ -233,7 +235,7 @@ public class TS_FileDocxUtils implements AutoCloseable {
     }
 
     private TGS_UnionExcuseVoid mergeCell_byIndex(XWPFTable table, int rowIdxFrom, int rowIdxTo, int colIdxFrom, int colIdxTo, int[] widthsPercent) {
-        return TGS_UnSafe.call(() -> {
+        return TGS_FuncMTCEUtils.call(() -> {
             d.ci("mergeCell_byIndex -> RF:" + rowIdxFrom + ", RT:" + rowIdxTo + ", CF:" + colIdxFrom + ", CT:" + colIdxTo);
             if (rowIdxTo < rowIdxFrom) {
                 return TGS_UnionExcuseVoid.ofExcuse(d.className, "mergeCell_byIndex", "ERROR: mergeCell_byIndex.rowIdxTo:" + rowIdxTo + " < rowIdxFrom:" + rowIdxFrom);
@@ -265,7 +267,7 @@ public class TS_FileDocxUtils implements AutoCloseable {
     }
 
     private TGS_UnionExcuseVoid mergeTableCells_Rows(XWPFTable table, int rowIdxFrom, int rowIdxTo, int colIdx) {
-        return TGS_UnSafe.call(() -> {
+        return TGS_FuncMTCEUtils.call(() -> {
             d.ci("mergeTableCells_Rows -> RF:" + rowIdxFrom + ", RT:" + rowIdxTo + ", CI:" + colIdx);
             for (var rowIndex = rowIdxFrom; rowIndex <= rowIdxTo; rowIndex++) {
                 var cell = table.getRow(rowIndex).getCell(colIdx);
@@ -297,7 +299,7 @@ public class TS_FileDocxUtils implements AutoCloseable {
 
     //merging horizontally by setting grid span instead of using CTHMerge
     private TGS_UnionExcuseVoid mergeTableCells_Cols(XWPFTable table, int rowIdx, int colIdxFrom, int colIdxTo) {
-        return TGS_UnSafe.call(() -> {
+        return TGS_FuncMTCEUtils.call(() -> {
             d.ci("mergeTableCells_Cols -> RI:" + rowIdx + ", CF:" + colIdxFrom + ", CT:" + colIdxTo);
             var cell = table.getRow(rowIdx).getCell(colIdxFrom);
             // Try getting the TcPr. Not simply setting an new one every time.
