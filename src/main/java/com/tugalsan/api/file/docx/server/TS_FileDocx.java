@@ -426,10 +426,10 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
 
         TGS_StreamUtils.reverse(0, spanList.size()).forEach(i -> {//FRW NOT WORKING
             var tokens = TGS_StringUtils.jre().toList_spc(spanList.get(i));
-            var rIdx = TGS_CastUtils.toInteger(tokens.get(0));
-            var cIdx = TGS_CastUtils.toInteger(tokens.get(1));
-            var rSpan = TGS_CastUtils.toInteger(tokens.get(2));
-            var cSpan = TGS_CastUtils.toInteger(tokens.get(3));
+            var rIdx = TGS_CastUtils.toInteger(tokens.get(0)).orElseThrow();
+            var cIdx = TGS_CastUtils.toInteger(tokens.get(1)).orElseThrow();
+            var rSpan = TGS_CastUtils.toInteger(tokens.get(2)).orElseThrow();
+            var cSpan = TGS_CastUtils.toInteger(tokens.get(3)).orElseThrow();
             d.ci("endTable.INFO: TS_MIFDOCX.endTable -> cell ri/ci/rc/cs:", rIdx, cIdx, rSpan, cSpan);
             docx.mergeCell_bySpan(table, rIdx, cIdx, rSpan, cSpan, table_relColSizes);
         });
