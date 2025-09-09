@@ -17,16 +17,14 @@ import com.tugalsan.api.url.client.*;
 import com.tugalsan.api.file.common.server.TS_FileCommonConfig;
 import com.tugalsan.api.file.common.server.TS_FileCommonFontTags;
 import com.tugalsan.api.function.client.TGS_FuncUtils;
+import java.util.function.Supplier;
 
 public class TS_FileDocx extends TS_FileCommonAbstract {
 
-    private static TS_Log d() {
-        return d.orElse(TS_Log.of( TS_FileDocx.class));
-    }
-    final private static StableValue<TS_Log> d = StableValue.of();
+    final private static Supplier<TS_Log> d = StableValue.supplier(() -> TS_Log.of(TS_FileDocx.class));
 
     public String getSuperClassName() {
-        return d().className;
+        return d.get().className;
     }
 
     private static int FONT_HEIGHT_OFFSET() {
@@ -80,15 +78,15 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
             return true;
         }
         setClosed();
-        d().ci("saveFile.DOCX->");
+        d.get().ci("saveFile.DOCX->");
         if (docx == null) {
-            d().ci("DOCX File is null");
+            d.get().ci("DOCX File is null");
         } else {
             docx.close();
             if (TS_FileUtils.isExistFile(docx.getFile())) {
-                d().ci("saveFile.FIX: DOCX File save", docx.getFile(), "successfull");
+                d.get().ci("saveFile.FIX: DOCX File save", docx.getFile(), "successfull");
             } else {
-                d().ce("saveFile.FIX: DOCX File save", docx.getFile(), "failed");
+                d.get().ce("saveFile.FIX: DOCX File save", docx.getFile(), "failed");
             }
         }
         return errorSource == null;
@@ -99,7 +97,7 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
         if (isClosed()) {
             return true;
         }
-        d().ci("createNewPage");
+        d.get().ci("createNewPage");
         docx.insertPage();
         docx.setCurrentPage(landscape, pageSizeAX);
         return true;
@@ -110,7 +108,7 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
         if (isClosed()) {
             return true;
         }
-        d().ci("endText");
+        d.get().ci("endText");
         docxParag = null;
         return true;
     }
@@ -120,7 +118,7 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
         if (isClosed()) {
             return true;
         }
-        d().ci("addText");
+        d.get().ci("addText");
         var lines = TGS_StringUtils.jre().toList(text, "\n");
         var fh = fileCommonConfig.fontHeight + FONT_HEIGHT_OFFSET() < 1 ? 1 : fileCommonConfig.fontHeight + FONT_HEIGHT_OFFSET();
         for (var i = 0; i < lines.size(); i++) {
@@ -164,7 +162,7 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
         if (isClosed()) {
             return true;
         }
-        d().ci("addLineBreak");
+        d.get().ci("addLineBreak");
         docx.addNewLine(docxParag);
         return true;
     }
@@ -174,7 +172,7 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
         if (isClosed()) {
             return true;
         }
-        d().ci("setFontStyle");
+        d.get().ci("setFontStyle");
         return true;
     }
 
@@ -183,7 +181,7 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
         if (isClosed()) {
             return true;
         }
-        d().ci("setFontHeight");
+        d.get().ci("setFontHeight");
         return true;
     }
 
@@ -192,7 +190,7 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
         if (isClosed()) {
             return true;
         }
-        d().ci("setFontColor");
+        d.get().ci("setFontColor");
         return true;
     }
 
@@ -201,17 +199,17 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
         if (isClosed()) {
             return true;
         }
-        d().ci("addImage", "init", pstImageLoc);
+        d.get().ci("addImage", "init", pstImageLoc);
         beginText(0);
         boolean result;
         if (docx.addImage(docxParag, pstImageLoc.toAbsolutePath().toString(), pstImage.getWidth(), pstImage.getHeight())) {
             result = true;
         } else {
-            d().ce("addImage", "ERROR: TS_MIFDOCX.addImage_returns false");
+            d.get().ce("addImage", "ERROR: TS_MIFDOCX.addImage_returns false");
             result = false;
         }
         endText();
-        d().ci("addImage", "fin");
+        d.get().ci("addImage", "fin");
         return result;
     }
 
@@ -220,17 +218,17 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
         if (isClosed()) {
             return true;
         }
-        d().ci("beginTableCell");
+        d.get().ci("beginTableCell");
         if (tableRowCell != null) {
-            d().ce("beginTableCell.ERROR: TS_MIFDOCX.beginTableCell -> why tableRowCell exists!");
+            d.get().ce("beginTableCell.ERROR: TS_MIFDOCX.beginTableCell -> why tableRowCell exists!");
             return false;
         }
         if (tableRow == null) {
-            d().ce("beginTableCell.ERROR: TS_MIFDOCX.beginTableCell -> why tableRow not exists!");
+            d.get().ce("beginTableCell.ERROR: TS_MIFDOCX.beginTableCell -> why tableRow not exists!");
             return false;
         }
         if (table == null) {
-            d().ce("beginTableCell.ERROR: TS_MIFDOCX.beginTableCell -> why table not exists!");
+            d.get().ce("beginTableCell.ERROR: TS_MIFDOCX.beginTableCell -> why table not exists!");
             return false;
         }
         //CALCULATE rowCellColSpanOffset
@@ -248,11 +246,11 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
         //SET CELL
         {
             if (table_relColSizes.length <= rowCellColSpanOffset) {
-                d().ce("beginTableCell.ERROR: TS_MIFDOCX.beginTableCell -> FAILED(table_relColSizes.length <= cellColCounter)");
+                d.get().ce("beginTableCell.ERROR: TS_MIFDOCX.beginTableCell -> FAILED(table_relColSizes.length <= cellColCounter)");
                 return false;
             }
             tableRowCell = tableRow.getCell(rowCellColSpanOffset);
-            d().ci("beginTableCell.INFO: TS_MIFDOCX.currentRow/Col: " + currentRowIndex + "/" + rowCellColSpanOffset);
+            d.get().ci("beginTableCell.INFO: TS_MIFDOCX.currentRow/Col: " + currentRowIndex + "/" + rowCellColSpanOffset);
             tableAbstract.setValue(currentRowIndex, rowCellColSpanOffset, CELL_INIT);
             spanList.add(currentRowIndex + " " + rowCellColSpanOffset + " " + rowSpan + " " + colSpan);
         }
@@ -281,7 +279,7 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
             if (frowCellColSpanOffset + ci <= table_relColSizes.length - 1) {
                 tableAbstract.setValue(currentRowIndex, frowCellColSpanOffset + ci, CELL_INIT);
             } else {
-                d().ci("beginTableCell.ERROR: TS_MIFDOCX.beginTableCell -> eColSpan WHY CANOT ADD COLSPANFULL: rowCellColSpanOffset + c <= table_relColSizes.length - 1", "rowCellColSpanOffset: ", frowCellColSpanOffset, "table_relColSizes.length: " + table_relColSizes.length);
+                d.get().ci("beginTableCell.ERROR: TS_MIFDOCX.beginTableCell -> eColSpan WHY CANOT ADD COLSPANFULL: rowCellColSpanOffset + c <= table_relColSizes.length - 1", "rowCellColSpanOffset: ", frowCellColSpanOffset, "table_relColSizes.length: " + table_relColSizes.length);
             }
         });
 
@@ -289,7 +287,7 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
             var rowCreated = false;
             if (table.getRows().size() <= currentRowIndex + ri) {
                 TS_FileDocxUtils.addTableRow(table, table_relColSizes.length);
-                d().ci("beginTableCell.table.createRow();  *** //ADD ROWSPAN FILL");
+                d.get().ci("beginTableCell.table.createRow();  *** //ADD ROWSPAN FILL");
                 rowCreated = true;
             }
             if (rowCreated) {
@@ -306,7 +304,7 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
     public List<String> spanList;
 
     private int calculateRowCellColSpanOffset() {
-        d().ci("calcultaeRowCellColSpanOffset");
+        d.get().ci("calcultaeRowCellColSpanOffset");
         var rowCellColSpanOffset = 0;
         if (isClosed()) {
             return rowCellColSpanOffset;
@@ -315,26 +313,26 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
         for (int ci = 0; ci < table_relColSizes.length; ci++) {
             var eRowCellText = tableAbstract.getValueAsString(currentRowIndex, ci);
             if (null == eRowCellText) {
-                d().ci("calcultaeRowCellColSpanOffset.O(", currentRowIndex + "," + ci + ")[", eRowCellText, "]");
+                d.get().ci("calcultaeRowCellColSpanOffset.O(", currentRowIndex + "," + ci + ")[", eRowCellText, "]");
                 rowCellColSpanOffset += 1; //full already adds 1
             } else {
                 switch (eRowCellText) {
                     case CELL_EMPTY -> {
-                        d().ci("calcultaeRowCellColSpanOffset.E(", currentRowIndex, "," + ci, ")[", eRowCellText, "]");
+                        d.get().ci("calcultaeRowCellColSpanOffset.E(", currentRowIndex, "," + ci, ")[", eRowCellText, "]");
                         break OUTER;
                     }
                     case CELL_FULL -> {
-                        d().ci("calcultaeRowCellColSpanOffset.F(", currentRowIndex + "," + ci + ")[", eRowCellText, "]");
+                        d.get().ci("calcultaeRowCellColSpanOffset.F(", currentRowIndex + "," + ci + ")[", eRowCellText, "]");
                         rowCellColSpanOffset += 1; //from rowspan
                     }
                     default -> {
-                        d().ci("calcultaeRowCellColSpanOffset.O(", currentRowIndex + "," + ci + ")[", eRowCellText, "]");
+                        d.get().ci("calcultaeRowCellColSpanOffset.O(", currentRowIndex + "," + ci + ")[", eRowCellText, "]");
                         rowCellColSpanOffset += 1; //full already adds 1
                     }
                 }
             }
         }
-        d().ci("calcultaeRowCellColSpanOffset", "rowCellColSpanMax: " + table_relColSizes.length, "rowCellColSpanOffset: ", rowCellColSpanOffset);
+        d.get().ci("calcultaeRowCellColSpanOffset", "rowCellColSpanMax: " + table_relColSizes.length, "rowCellColSpanOffset: ", rowCellColSpanOffset);
         return rowCellColSpanOffset;
     }
 
@@ -342,25 +340,25 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
         if (isClosed()) {
             return true;
         }
-        d().ci("checkMaxColumnSize.tablesize:" + table.getRows().size());
+        d.get().ci("checkMaxColumnSize.tablesize:" + table.getRows().size());
         var rowAdded = false;
         if (table_relColSizes.length <= rowCellColSpanOffset) {
             rowAdded = true;
             if (table.getRows().size() - 1 == currentRowIndex) {
                 currentRowIndex++;
                 tableRow = TS_FileDocxUtils.addTableRow(table, table_relColSizes.length);
-                d().ci("checkMaxColumnSize. *** table.createRow();  *** //checkMaxColumnSize");
+                d.get().ci("checkMaxColumnSize. *** table.createRow();  *** //checkMaxColumnSize");
                 for (var c = 0; c < table_relColSizes.length; c++) {
                     tableAbstract.setValue(currentRowIndex, c, CELL_EMPTY);
                 }
-                d().ci("checkMaxColumnSize.DECISION: NEWROW_ADDED");
+                d.get().ci("checkMaxColumnSize.DECISION: NEWROW_ADDED");
             } else {
                 currentRowIndex++;
                 tableRow = table.getRow(currentRowIndex);
-                d().ci("checkMaxColumnSize.DECISION: ROW_ALREADY_EXISTS");
+                d.get().ci("checkMaxColumnSize.DECISION: ROW_ALREADY_EXISTS");
             }
         } else {
-            d().ci("checkMaxColumnSize.DECISION: PASS");
+            d.get().ci("checkMaxColumnSize.DECISION: PASS");
         }
         return rowAdded;
     }
@@ -370,13 +368,13 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
         if (isClosed()) {
             return true;
         }
-        d().ci("endTableCell");
+        d.get().ci("endTableCell");
         if (tableRow == null) {
-            d().ce("endTableCell.ERROR: TS_MIFDOCX.endTableCell -> why tableRow not exists!");
+            d.get().ce("endTableCell.ERROR: TS_MIFDOCX.endTableCell -> why tableRow not exists!");
             return false;
         }
         if (tableRowCell == null) {
-            d().ce("endTableCell.ERROR: TS_MIFDOCX.endTableCell -> why tableRowCell not exists!");
+            d.get().ce("endTableCell.ERROR: TS_MIFDOCX.endTableCell -> why tableRowCell not exists!");
             return false;
         }
         tableRowCell = null;
@@ -388,14 +386,14 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
         if (isClosed()) {
             return true;
         }
-        d().ci("beginTable");
+        d.get().ci("beginTable");
         this.table_relColSizes = table_relColSizes;
         if (table != null) {
-            d().ce("beginTable.ERROR: TS_MIFDOCX.beginTable -> table already exists");
+            d.get().ce("beginTable.ERROR: TS_MIFDOCX.beginTable -> table already exists");
             return false;
         }
         if (tableRow != null) {
-            d().ce("beginTable.ERROR: TS_MIFDOCX.beginTable -> tableRow already exists");
+            d.get().ce("beginTable.ERROR: TS_MIFDOCX.beginTable -> tableRow already exists");
             return false;
         }
 
@@ -415,13 +413,13 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
         if (isClosed()) {
             return true;
         }
-        d().ci("endTable");
+        d.get().ci("endTable");
         if (table == null) {
-            d().ce("endTable.ERROR: TS_MIFDOCX.endTable -> table not exists");
+            d.get().ce("endTable.ERROR: TS_MIFDOCX.endTable -> table not exists");
             return false;
         }
         if (tableRow == null) {
-            d().ce("endTable.ERROR: TS_MIFDOCX.endTable -> tableRow not exists");
+            d.get().ce("endTable.ERROR: TS_MIFDOCX.endTable -> tableRow not exists");
             return false;
         }
 
@@ -433,7 +431,7 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
             var cIdx = TGS_CastUtils.toInteger(tokens.get(1)).orElseThrow();
             var rSpan = TGS_CastUtils.toInteger(tokens.get(2)).orElseThrow();
             var cSpan = TGS_CastUtils.toInteger(tokens.get(3)).orElseThrow();
-            d().ci("endTable.INFO: TS_MIFDOCX.endTable -> cell ri/ci/rc/cs:", rIdx, cIdx, rSpan, cSpan);
+            d.get().ci("endTable.INFO: TS_MIFDOCX.endTable -> cell ri/ci/rc/cs:", rIdx, cIdx, rSpan, cSpan);
             docx.mergeCell_bySpan(table, rIdx, cIdx, rSpan, cSpan, table_relColSizes);
         });
         currentRowIndex = 0;
@@ -451,7 +449,7 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
         if (isClosed()) {
             return true;
         }
-        d().ci("beginText", "allign_Left0_center1_right2_just3", allign_Left0_center1_right2_just3);
+        d.get().ci("beginText", "allign_Left0_center1_right2_just3", allign_Left0_center1_right2_just3);
         if (tableRowCell == null) {
             docxParag = docx.createParagraph(allign_Left0_center1_right2_just3, false);
         } else {
