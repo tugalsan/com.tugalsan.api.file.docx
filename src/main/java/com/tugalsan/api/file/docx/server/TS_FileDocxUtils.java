@@ -32,11 +32,10 @@ import com.tugalsan.api.log.server.*;
 import com.tugalsan.api.stream.client.*;
 import com.tugalsan.api.union.client.TGS_UnionExcuse;
 import com.tugalsan.api.union.client.TGS_UnionExcuseVoid;
-import java.util.function.Supplier;
 
 public class TS_FileDocxUtils implements AutoCloseable {
 
-    final private static Supplier<TS_Log> d = StableValue.supplier(() -> TS_Log.of(TS_FileDocxUtils.class));
+    final private static TS_Log d = TS_Log.of(TS_FileDocxUtils.class);
 
     public static TGS_UnionExcuse<Dimension> getPageDimension(XWPFDocument doc) {
         return TGS_FuncMTCUtils.call(() -> {
@@ -54,7 +53,7 @@ public class TS_FileDocxUtils implements AutoCloseable {
             if (pageSize.getW() instanceof BigInteger pageSizeWidth && pageSize.getH() instanceof BigInteger pageSizeHeight) {
                 dim.setSize(pageSizeWidth.intValueExact(), pageSizeHeight.intValueExact());
             } else {
-                TGS_FuncMTUUtils.thrw(d.get().className, "getPageDimension", "NOT pageSize.getW() instanceof BigInteger pageSizeWidth && pageSize.getH() instanceof BigInteger pageSizeHeight -> " + pageSize.getW());
+                TGS_FuncMTUUtils.thrw(d.className(), "getPageDimension", "NOT pageSize.getW() instanceof BigInteger pageSizeWidth && pageSize.getH() instanceof BigInteger pageSizeHeight -> " + pageSize.getW());
             }
             return TGS_UnionExcuse.of(dim);
         }, e -> TGS_UnionExcuse.ofExcuse(e));
@@ -72,7 +71,7 @@ public class TS_FileDocxUtils implements AutoCloseable {
     }
 
     public void setCurrentPage(boolean landscape, int pageSizeAX) {
-        d.get().ci("setCurrentPage.", landscape, pageSizeAX);
+        d.ci("setCurrentPage.", landscape, pageSizeAX);
         this.landscape = landscape;
         this.pageSizeAX = pageSizeAX;
         var document = doc.getDocument();
@@ -92,27 +91,27 @@ public class TS_FileDocxUtils implements AutoCloseable {
             case 3 -> {
                 pageSize.setW(BigInteger.valueOf(landscape ? 23811 : 16838));
                 pageSize.setH(BigInteger.valueOf(landscape ? 16838 : 23811));
-                d.get().ci("setCurrentPage->A" + 3);
+                d.ci("setCurrentPage->A" + 3);
             }
             case 4 -> {
                 pageSize.setW(BigInteger.valueOf(landscape ? 16838 : 11906));
                 pageSize.setH(BigInteger.valueOf(landscape ? 11906 : 16838));
-                d.get().ci("setCurrentPage->A" + 4);
+                d.ci("setCurrentPage->A" + 4);
             }
             case 5 -> {
                 pageSize.setW(BigInteger.valueOf(landscape ? 11906 : 8391));
                 pageSize.setH(BigInteger.valueOf(landscape ? 8391 : 11906));
-                d.get().ci("setCurrentPage->A" + 5);
+                d.ci("setCurrentPage->A" + 5);
             }
             case 6 -> {
                 pageSize.setW(BigInteger.valueOf(landscape ? 8392 : 5954));
                 pageSize.setH(BigInteger.valueOf(landscape ? 5954 : 8392));
-                d.get().ci("setCurrentPage->A" + 6);
+                d.ci("setCurrentPage->A" + 6);
             }
             case 7 -> {
                 pageSize.setW(BigInteger.valueOf(landscape ? 5936 : 4196));
                 pageSize.setH(BigInteger.valueOf(landscape ? 4196 : 5936));
-                d.get().ci("setCurrentPage->A" + 7);
+                d.ci("setCurrentPage->A" + 7);
             }
             default -> {
             }
@@ -140,7 +139,7 @@ public class TS_FileDocxUtils implements AutoCloseable {
     @Override
     public void close() {
         TGS_FuncMTCUtils.run(() -> {
-            d.get().ci("close.");
+            d.ci("close.");
             doc.createParagraph();
             try (var fileOut = Files.newOutputStream(filePath)) {
                 doc.write(fileOut);
@@ -150,21 +149,21 @@ public class TS_FileDocxUtils implements AutoCloseable {
     }
 
     public boolean addImage(XWPFParagraph p, CharSequence imgFile) {
-        d.get().ci("addImage", "p", p, "imgFile", imgFile);
+        d.ci("addImage", "p", p, "imgFile", imgFile);
         return addImage(p, imgFile, 200, 200);
     }
 
     public boolean addImage(XWPFParagraph p, CharSequence imgFile, int width, int height) {
         return TGS_FuncMTCUtils.call(() -> {
             var imgFileStr = imgFile.toString();
-            d.get().ci("addImage", "p", p, "imgFile", imgFileStr, "width", width, "height", height);
+            d.ci("addImage", "p", p, "imgFile", imgFileStr, "width", width, "height", height);
             if (p == null) {
-                d.get().ce("addImage.ERROR: TK_DOCXFile.addImage.p == null");
+                d.ce("addImage.ERROR: TK_DOCXFile.addImage.p == null");
                 return false;
             }
-            if (d.get().infoEnable) {
+            if (d.infoEnable) {
                 var bi = TS_FileImageUtils.readImageFromFile(Path.of(imgFileStr), true);
-                d.get().ci("addImage", "imgWidth", bi.getWidth(), "imgHeight", bi.getHeight(), "inputWidth", width, "inputheight", height);
+                d.ci("addImage", "imgWidth", bi.getWidth(), "imgHeight", bi.getHeight(), "inputWidth", width, "inputheight", height);
             }
 
             Integer format = null;
@@ -207,44 +206,44 @@ public class TS_FileDocxUtils implements AutoCloseable {
                 format = XWPFDocument.PICTURE_TYPE_WPG;
             }
             if (format == null) {
-                d.get().ce("addImage.Unsupported picture: " + imgFileStr + ". Expected emf|wmf|pict|jpeg|png|dib|gif|tiff|eps|bmp|wpg");
+                d.ce("addImage.Unsupported picture: " + imgFileStr + ". Expected emf|wmf|pict|jpeg|png|dib|gif|tiff|eps|bmp|wpg");
                 return false;
             } else {
 //        r.setText(imgFile);
 //        r.addBreak();
-                d.get().ci("addImage.INFO: TK_DOCXFile.run.addPicture.BEGIN...");
+                d.ci("addImage.INFO: TK_DOCXFile.run.addPicture.BEGIN...");
                 try (var is = new FileInputStream(imgFileStr)) {
                     var r = p.createRun();
                     r.addPicture(is, format, imgFileStr, Units.toEMU(width), Units.toEMU(height)); // 200x200 pixels
                 }
-                d.get().ci("addImage.INFO: TK_DOCXFile.run.addPicture.END");
+                d.ci("addImage.INFO: TK_DOCXFile.run.addPicture.END");
                 return true;
             }
         });
     }
 
     public TGS_UnionExcuseVoid mergeCell_bySpan(XWPFTable table, int rowIdx, int colIdx, int rowSpan, int colSpan, int[] widthsPercent) {
-        d.get().ci("mergeCell_bySpan table:" + table + ", RI:" + rowIdx + ", CI: " + colIdx + ", RSP: " + rowSpan + ", CSP:" + colSpan);
+        d.ci("mergeCell_bySpan table:" + table + ", RI:" + rowIdx + ", CI: " + colIdx + ", RSP: " + rowSpan + ", CSP:" + colSpan);
         if (rowSpan < 1) {
-            return TGS_UnionExcuseVoid.ofExcuse(d.get().className, "mergeCell_bySpan", "ERROR: mergeCell_bySpan.rowSpan:" + rowSpan + " < 1");
+            return TGS_UnionExcuseVoid.ofExcuse(d.className(), "mergeCell_bySpan", "ERROR: mergeCell_bySpan.rowSpan:" + rowSpan + " < 1");
         }
         if (colSpan < 1) {
-            return TGS_UnionExcuseVoid.ofExcuse(d.get().className, "mergeCell_bySpan", "ERROR: mergeCell_bySpan.colSpan:" + colSpan + " < 1");
+            return TGS_UnionExcuseVoid.ofExcuse(d.className(), "mergeCell_bySpan", "ERROR: mergeCell_bySpan.colSpan:" + colSpan + " < 1");
         }
         return mergeCell_byIndex(table, rowIdx, rowIdx + rowSpan - 1, colIdx, colIdx + colSpan - 1, widthsPercent);
     }
 
     private TGS_UnionExcuseVoid mergeCell_byIndex(XWPFTable table, int rowIdxFrom, int rowIdxTo, int colIdxFrom, int colIdxTo, int[] widthsPercent) {
         return TGS_FuncMTCUtils.call(() -> {
-            d.get().ci("mergeCell_byIndex -> RF:" + rowIdxFrom + ", RT:" + rowIdxTo + ", CF:" + colIdxFrom + ", CT:" + colIdxTo);
+            d.ci("mergeCell_byIndex -> RF:" + rowIdxFrom + ", RT:" + rowIdxTo + ", CF:" + colIdxFrom + ", CT:" + colIdxTo);
             if (rowIdxTo < rowIdxFrom) {
-                return TGS_UnionExcuseVoid.ofExcuse(d.get().className, "mergeCell_byIndex", "ERROR: mergeCell_byIndex.rowIdxTo:" + rowIdxTo + " < rowIdxFrom:" + rowIdxFrom);
+                return TGS_UnionExcuseVoid.ofExcuse(d.className(), "mergeCell_byIndex", "ERROR: mergeCell_byIndex.rowIdxTo:" + rowIdxTo + " < rowIdxFrom:" + rowIdxFrom);
             }
             if (colIdxTo < colIdxFrom) {
-                return TGS_UnionExcuseVoid.ofExcuse(d.get().className, "mergeCell_byIndex", "ERROR: mergeCell_byIndex.colIdxTo:" + colIdxTo + " < colIdxFrom:" + colIdxFrom);
+                return TGS_UnionExcuseVoid.ofExcuse(d.className(), "mergeCell_byIndex", "ERROR: mergeCell_byIndex.colIdxTo:" + colIdxTo + " < colIdxFrom:" + colIdxFrom);
             }
             while (table.getRows().size() <= rowIdxTo) {
-                d.get().ci("mergeCell_byIndex.incRow -> rs: " + table.getRows().size());
+                d.ci("mergeCell_byIndex.incRow -> rs: " + table.getRows().size());
                 addTableRow(table, widthsPercent.length);
             }
             if (rowIdxFrom != rowIdxTo) {
@@ -268,7 +267,7 @@ public class TS_FileDocxUtils implements AutoCloseable {
 
     private TGS_UnionExcuseVoid mergeTableCells_Rows(XWPFTable table, int rowIdxFrom, int rowIdxTo, int colIdx) {
         return TGS_FuncMTCUtils.call(() -> {
-            d.get().ci("mergeTableCells_Rows -> RF:" + rowIdxFrom + ", RT:" + rowIdxTo + ", CI:" + colIdx);
+            d.ci("mergeTableCells_Rows -> RF:" + rowIdxFrom + ", RT:" + rowIdxTo + ", CI:" + colIdx);
             for (var rowIndex = rowIdxFrom; rowIndex <= rowIdxTo; rowIndex++) {
                 var cell = table.getRow(rowIndex).getCell(colIdx);
                 var vmerge = CTVMerge.Factory.newInstance();
@@ -300,7 +299,7 @@ public class TS_FileDocxUtils implements AutoCloseable {
     //merging horizontally by setting grid span instead of using CTHMerge
     private TGS_UnionExcuseVoid mergeTableCells_Cols(XWPFTable table, int rowIdx, int colIdxFrom, int colIdxTo) {
         return TGS_FuncMTCUtils.call(() -> {
-            d.get().ci("mergeTableCells_Cols -> RI:" + rowIdx + ", CF:" + colIdxFrom + ", CT:" + colIdxTo);
+            d.ci("mergeTableCells_Cols -> RI:" + rowIdx + ", CF:" + colIdxFrom + ", CT:" + colIdxTo);
             var cell = table.getRow(rowIdx).getCell(colIdxFrom);
             // Try getting the TcPr. Not simply setting an new one every time.
             var tcPr = cell.getCTTc().getTcPr();
@@ -380,7 +379,7 @@ public class TS_FileDocxUtils implements AutoCloseable {
     }
 
     public void setTableColWidth(XWPFTable table, int rowIdx, int colIdx, int widthPercent) {
-        d.get().ci("setTableColWidth", "table", table, "rowIdx", rowIdx, "colIdx", colIdx, "widthPercent", widthPercent);
+        d.ci("setTableColWidth", "table", table, "rowIdx", rowIdx, "colIdx", colIdx, "widthPercent", widthPercent);
         var factor = (int) Math.floor(widthPercent * 1440 * getTableWidthFactor());
         var tblWidth = CTTblWidth.Factory.newInstance();
         tblWidth.setW(BigInteger.valueOf(factor));
@@ -425,7 +424,7 @@ public class TS_FileDocxUtils implements AutoCloseable {
     }
 
     public XWPFTable createTable(int rowSize, int colSize) {
-        d.get().ci("createTable", "rowSize", rowSize, "colSize", colSize);
+        d.ci("createTable", "rowSize", rowSize, "colSize", colSize);
         if (tablefix) {
             if (!lastItemIsCreateParagraph) {//TABLE WIDTH FIX
                 var p = doc.createParagraph();
@@ -446,7 +445,7 @@ public class TS_FileDocxUtils implements AutoCloseable {
     }
 
     private void styleParagraph(XWPFParagraph p, int allign_center1_right2_leftDefault, boolean isBordered) {
-        d.get().ci("styleParagraph", "p", p, "allign_center1_right2_leftDefault", allign_center1_right2_leftDefault, "isBordered", isBordered);
+        d.ci("styleParagraph", "p", p, "allign_center1_right2_leftDefault", allign_center1_right2_leftDefault, "isBordered", isBordered);
         switch (allign_center1_right2_leftDefault) {
             case 1 ->
                 p.setAlignment(ParagraphAlignment.CENTER);
@@ -470,7 +469,7 @@ public class TS_FileDocxUtils implements AutoCloseable {
     boolean lastItemIsCreateParagraph = false;
 
     public XWPFParagraph createParagraph(int allign_center1_right2_leftDefault, boolean isBordered) {
-        d.get().ci("createParagraph", "allign_center1_right2_leftDefault", allign_center1_right2_leftDefault, "isBordered", isBordered);
+        d.ci("createParagraph", "allign_center1_right2_leftDefault", allign_center1_right2_leftDefault, "isBordered", isBordered);
         var p = doc.createParagraph();
         p.setWordWrapped(true);
         styleParagraph(p, allign_center1_right2_leftDefault, isBordered);
@@ -479,12 +478,12 @@ public class TS_FileDocxUtils implements AutoCloseable {
     }
 
     public XWPFParagraph getParagraph(XWPFTable table, int r, int c, int allign_center1_right2_leftDefault) {
-        d.get().ci("getParagraph", "r", r, "c", c, "allign_center1_right2_leftDefault", allign_center1_right2_leftDefault);
+        d.ci("getParagraph", "r", r, "c", c, "allign_center1_right2_leftDefault", allign_center1_right2_leftDefault);
         return getParagraph(table.getRow(r).getCell(c), allign_center1_right2_leftDefault);
     }
 
     public XWPFParagraph getParagraph(XWPFTableCell cell, int allign_center1_right2_leftDefault) {
-        d.get().ci("getParagraph", "cell", cell, "allign_center1_right2_leftDefault", allign_center1_right2_leftDefault);
+        d.ci("getParagraph", "cell", cell, "allign_center1_right2_leftDefault", allign_center1_right2_leftDefault);
         var p = cell.getParagraphs().get(0);
         styleParagraph(p, allign_center1_right2_leftDefault, false);
         p.setWordWrapped(true);
@@ -492,7 +491,7 @@ public class TS_FileDocxUtils implements AutoCloseable {
     }
 
     public void addText(XWPFParagraph p, CharSequence text, boolean isBold, boolean isItalic, boolean isUnderlined, int fontSize, CharSequence fontColor) {
-        d.get().ci("addText", "p", p, "text", text);
+        d.ci("addText", "p", p, "text", text);
         var tokens = TGS_StringUtils.jre().toList(text, "\n");
         var tokenCount = 0;
         for (var t : tokens) {
@@ -508,12 +507,12 @@ public class TS_FileDocxUtils implements AutoCloseable {
     }
 
     public void addNewLine(XWPFParagraph p) {
-        d.get().ci("addNewLine", "XWPFParagraph", p);
+        d.ci("addNewLine", "XWPFParagraph", p);
         p.createRun().addBreak();
     }
 
     public void insertPage() {
-        d.get().ci("insertPage");
+        d.ci("insertPage");
         if (firstPageTriggered) {
             var r = createParagraph().createRun();
             r.addCarriageReturn();                 //separate previous text from break
@@ -526,7 +525,7 @@ public class TS_FileDocxUtils implements AutoCloseable {
     private boolean firstPageTriggered = false;
 
     private XWPFRun createFontedRun(XWPFParagraph p, boolean isBold, boolean isItalic, boolean isUnderlined, int fontSize, CharSequence fontColor) {
-        d.get().ci("createFontedRun", "p", p, "isBold", isBold, "isItalic", isItalic, "isUnderlined", isUnderlined, "fontSize", fontSize, "fontColor", fontColor);
+        d.ci("createFontedRun", "p", p, "isBold", isBold, "isItalic", isItalic, "isUnderlined", isUnderlined, "fontSize", fontSize, "fontColor", fontColor);
         var r = p.createRun();
         r.setFontSize(fontSize);
         r.setFontFamily("Arial");
