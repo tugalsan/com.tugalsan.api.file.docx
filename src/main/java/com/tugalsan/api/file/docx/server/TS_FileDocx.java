@@ -22,6 +22,7 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
 
     final private static TS_Log d = TS_Log.of(TS_FileDocx.class);
 
+    @Override
     public String getSuperClassName() {
         return d.className();
     }
