@@ -1,37 +1,21 @@
 package com.tugalsan.api.file.docx.server;
 
-import com.tugalsan.api.charset.client.TGS_CharSetCast;
+import module com.tugalsan.api.file.img;
+import module com.tugalsan.api.function;
+import module com.tugalsan.api.string;
+import module com.tugalsan.api.log;
+import module com.tugalsan.api.stream;
+import module com.tugalsan.api.union;
+import module com.tugalsan.api.charset;
+import module org.apache.poi.poi;
+import module org.apache.poi.ooxml;
+import module org.apache.poi.ooxml.schemas;
+import module java.desktop;
+import org.apache.poi.xwpf.usermodel.TextAlignment;
 import java.io.*;
 import java.math.*;
 import java.nio.file.*;
 import java.util.stream.*;
-import java.awt.*;
-import org.apache.poi.util.Units;
-import org.apache.poi.xwpf.usermodel.XWPFTable;
-import org.apache.poi.xwpf.usermodel.Borders;
-import org.apache.poi.xwpf.usermodel.BreakType;
-import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
-import org.apache.poi.xwpf.usermodel.TextAlignment;
-import org.apache.poi.xwpf.usermodel.UnderlinePatterns;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
-import org.apache.poi.xwpf.usermodel.XWPFTableCell;
-import org.apache.poi.xwpf.usermodel.XWPFTableRow;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblWidth;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTcPr;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTVMerge;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STPageOrientation;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STTblWidth;
-import com.tugalsan.api.file.img.server.*;
-import com.tugalsan.api.function.client.maythrowexceptions.checked.TGS_FuncMTCUtils;
-import com.tugalsan.api.function.client.maythrowexceptions.unchecked.TGS_FuncMTUUtils;
-import com.tugalsan.api.string.client.*;
-import com.tugalsan.api.log.server.*;
-import com.tugalsan.api.stream.client.*;
-import com.tugalsan.api.union.client.TGS_UnionExcuse;
-import com.tugalsan.api.union.client.TGS_UnionExcuseVoid;
 
 public class TS_FileDocxUtils implements AutoCloseable {
 

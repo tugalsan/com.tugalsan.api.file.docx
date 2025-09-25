@@ -1,22 +1,20 @@
 package com.tugalsan.api.file.docx.server;
 
-import com.tugalsan.api.function.client.maythrowexceptions.unchecked.TGS_FuncMTU_In1;
-import com.tugalsan.api.file.common.server.TS_FileCommonAbstract;
-import com.tugalsan.api.string.client.*;
-import com.tugalsan.api.cast.client.*;
-import java.awt.image.*;
+import module com.tugalsan.api.string;
+import module com.tugalsan.api.cast;
+import module com.tugalsan.api.log;
+import module com.tugalsan.api.file;
+import module com.tugalsan.api.list;
+import module com.tugalsan.api.stream;
+import module com.tugalsan.api.url;
+import module com.tugalsan.api.file.common;
+import module com.tugalsan.api.function;
+import module java.desktop;
+import module org.apache.poi.ooxml;//import org.apache.poi.xwpf.usermodel.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.stream.*;
-import org.apache.poi.xwpf.usermodel.*;
-import com.tugalsan.api.log.server.*;
-import com.tugalsan.api.file.server.*;
-import com.tugalsan.api.list.client.*;
-import com.tugalsan.api.stream.client.*;
-import com.tugalsan.api.url.client.*;
-import com.tugalsan.api.file.common.server.TS_FileCommonConfig;
-import com.tugalsan.api.file.common.server.TS_FileCommonFontTags;
-import com.tugalsan.api.function.client.TGS_FuncUtils;
+
 
 public class TS_FileDocx extends TS_FileCommonAbstract {
 
