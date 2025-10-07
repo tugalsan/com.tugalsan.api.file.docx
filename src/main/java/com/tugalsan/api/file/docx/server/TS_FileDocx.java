@@ -462,6 +462,8 @@ public class TS_FileDocx extends TS_FileCommonAbstract {
         }
         if (Objects.equals(fontColor, TS_FileCommonFontTags.CODE_TOKEN_FONT_COLOR_RED())) {
             return "FF0000";
+        } else if (Objects.equals(fontColor, TS_FileCommonFontTags.CODE_TOKEN_FONT_COLOR_WHITE())) {
+            return "FFFFFF";
         } else if (Objects.equals(fontColor, TS_FileCommonFontTags.CODE_TOKEN_FONT_COLOR_YELLOW())) {
             return "FFFF00";
         } else if (Objects.equals(fontColor, TS_FileCommonFontTags.CODE_TOKEN_FONT_COLOR_BLUE())) {
